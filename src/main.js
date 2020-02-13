@@ -5,20 +5,22 @@ import App from "./App.vue";
 import VueSweetalert2 from "vue-sweetalert2";
 import PerfectScrollbar from "vue2-perfect-scrollbar";
 import {library} from "@fortawesome/fontawesome-svg-core";
-import {faCaretUp, faCaretDown, faInfoCircle, faEye, faRedo, faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faCaretUp, faCaretDown, faInfoCircle, faEye, faRedo, faTimes, faArrowAltCircleLeft, faImage, faCamera, faBan} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 import "sweetalert2/dist/sweetalert2.min.css";
 import "vue2-perfect-scrollbar/dist/vue2-perfect-scrollbar.css";
 
-import Dropzone from "./components/Dropzone";
-import Tree from "./components/Tree";
+import Main from "./components/Main";
+import HTML5 from "./components/HTML5";
+import Veeva from "./components/Veeva";
 
 Vue.config.productionTip = false;
 
 const routes = [
-	{path: "/", component: Dropzone},
-	{path: "/select", component: Tree}
+	{path: "/", component: Main},
+	{path: "/html5", component: HTML5},
+	{path: "/veeva", component: Veeva}
 ];
 const router = new VueRouter({
 	routes,
@@ -30,7 +32,7 @@ const options = {
 	cancelButtonColor: "#004D40"
 };
 
-library.add(faCaretUp, faCaretDown, faInfoCircle, faEye, faRedo, faTimes);
+library.add(faCaretUp, faCaretDown, faInfoCircle, faEye, faRedo, faTimes, faArrowAltCircleLeft, faImage, faCamera, faBan);
 
 Vue.use(VueRouter);
 Vue.use(VueSweetalert2, options);

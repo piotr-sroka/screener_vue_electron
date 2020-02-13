@@ -61,8 +61,8 @@ export default {
 }
 .title {
 	width: 100%;
-	background-color: #006064;
-	color: #e0f7fa;
+	background-color: #263238;
+	color: #ECEFF1;
 	padding: 20px 24px 20px 12px;
 	font-weight: bold;
 	cursor: pointer;
@@ -84,26 +84,26 @@ export default {
 	width: 100%;
 }
 .campaign-child > .title {
-	color: #e0f7fa;
+	color: #ECEFF1;
 	width: 100%;
 	padding: 12px 24px 12px 12px;
 	font-size: 0.8em;
 	cursor: default;
 }
 .variant-box > .title {
-	background-color: #00838f;
+	background-color: #37474F;
 }
 .language-box > .title {
-	background-color: #0097a7;
+	background-color: #455A64;
 }
 .size-box > .title {
-	background-color: #00acc1;
+	background-color: #546E7A;
 }
 .language-box > .title,
 .size-box > .title {
 	padding: 12px 24px 12px 12px;
 	font-size: 0.8em;
-	color: #e0f7fa;
+	color: #ECEFF1;
 }
 .variant-child > .title {
 	padding-left: 24px;

@@ -1,6 +1,6 @@
 <template>
 	<div class="tree">
-		<Campaign v-for="campaign in tree.campaigns" :key="campaign.name" :name="campaign.name" :campaign="campaign"></Campaign>
+		<Campaign v-for="campaign in tree.campaigns" :key="campaign.name" :campaign="campaign"></Campaign>
 	</div>
 </template>
 

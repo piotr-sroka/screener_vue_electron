@@ -1,7 +1,7 @@
 <template>
 	<div class="indexFile-box">
-		<BannerFrame :banner="indexFile" maxBannerWidth="100" maxBannerHeight="100" />
-		<BannerOptions :banner="indexFile" />
+		<BannerFrame :banner="indexFile" :maxBannerWidth="maxWidth" :maxBannerHeight="maxHeight" :type="type" />
+		<BannerOptions :banner="indexFile" :type="type" />
 	</div>
 </template>
 
@@ -17,7 +17,7 @@ export default {
 		BannerFrame,
 		BannerOptions
 	},
-	props: ["indexFile"],
+	props: ["indexFile", "type"],
 	data() {
 		return {
 			bannerFrame: null,
@@ -26,7 +26,14 @@ export default {
 			canvas: null
 		};
 	},
-	computed: {},
+	computed: {
+		maxWidth() {
+			return this.type === "veeva" ? 200 : 100;
+		},
+		maxHeight() {
+			return this.type === "veeva" ? 200 : 100;
+		},
+	},
 	methods: {},
 	mounted() {}
 };

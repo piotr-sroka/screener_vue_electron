@@ -1,14 +1,14 @@
 <template>
 	<div class="preview-box">
 		<header class="preview-header">
-			<h3 class="title">{{ simplePreviewBanner.nc_name }}</h3>
+			<h3 class="title">{{ simplePreviewBanner.nc_name || simplePreviewBanner.name }}</h3>
 			<div class="buttons">
 				<font-awesome-icon class="option" icon="redo" title="Show asset info" @click="reloadBanner" />
 				<font-awesome-icon class="option" icon="times" title="Preview asset" @click="closePreview" />
 			</div>
 		</header>
 		<div class="banner-container" ref="bannerContainer">
-			<BannerFrame ref="banner" :banner="simplePreviewBanner" :maxBannerWidth="maxPreviewBannerWidth" :maxBannerHeight="maxPreviewBannerHeight" />
+			<BannerFrame ref="banner" :banner="simplePreviewBanner" :maxBannerWidth="maxPreviewBannerWidth" :maxBannerHeight="maxPreviewBannerHeight" :type="currentContentType" />
 		</div>
 	</div>
 </template>
@@ -30,7 +30,7 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters(["simplePreviewBanner"])
+		...mapGetters(["simplePreviewBanner", "currentContentType"])
 	},
 	methods: {
 		checkProperSize() {
@@ -57,7 +57,7 @@ export default {
 		this.bannerContainer = this.$refs.bannerContainer;
 		this.banner = this.$refs.banner;
 		window.addEventListener("resize", this.onWindowResize);
-        this.onWindowResize();
+		this.onWindowResize();
 	}
 };
 </script>
@@ -69,6 +69,7 @@ export default {
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.8);
+	color: #eceff1;
 }
 .preview-header {
 	display: flex;
@@ -84,7 +85,7 @@ export default {
 .buttons {
 	margin-left: auto;
 	display: flex;
-    align-items: center;
+	align-items: center;
 	padding: 24px;
 }
 .option {

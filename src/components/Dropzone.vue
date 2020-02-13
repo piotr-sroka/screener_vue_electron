@@ -191,7 +191,6 @@ export default {
 					icon: "error"
 				});
 			this.$store.dispatch("createTree", this.tree);
-			this.$router.push("/select");
 		},
 		getCampaignName(pathParts) {
 			return pathParts.find(part => Regex.isCampaign.test(part));
@@ -207,14 +206,14 @@ export default {
 .dropzone {
 	width: 80%;
 	height: 200px;
-	border: 3px dashed #00bcd4;
+	border: 3px dashed #37474F;
 	margin: auto;
 	display: flex;
 	transition: all 0.2s linear;
 }
 .dropzone.drag-over {
-	border-color: #80deea;
-	color: #80deea;
+	border-color: #78909C;
+	color: #78909C;
 }
 .drop-input {
 	position: absolute;

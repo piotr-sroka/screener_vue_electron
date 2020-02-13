@@ -1,14 +1,15 @@
 <template>
 	<div>
-		<iframe ref="frame" class="banner-frame" scrolling="no" frameborder="0" :src="banner.htmlPath" @load="checkCanvas" :width="canvas ? canvas.width : 0" :height="canvas ? canvas.height : 0"></iframe>
+		<iframe ref="frame" class="banner-frame" scrolling="no" frameborder="0" :src="banner.htmlPath || banner.indexFile" @load="checkCanvas" :width="canvas ? canvas.width : 0" :height="canvas ? canvas.height : 0"></iframe>
 	</div>
 </template>
 <script>
 export default {
-	props: ["banner", "maxBannerWidth", "maxBannerHeight"],
+	props: ["banner", "maxBannerWidth", "maxBannerHeight", "type"],
 	data() {
 		return {
 			bannerFrame: null,
+			bannerWindow: null,
 			bannerDocument: null,
 			bannerBody: null,
 			canvas: null
@@ -16,14 +17,20 @@ export default {
 	},
 	methods: {
 		reloadBanner() {
-			this.$refs.frame.src = this.banner.htmlPath;
+			this.$refs.frame.src = this.banner.htmlPath || this.banner.indexFile;
 		},
 		checkCanvas(e) {
 			this.bannerFrame = e.target;
+			this.bannerWindow = this.bannerFrame.contentWindow;
 			this.bannerDocument = this.bannerFrame.contentDocument ? this.bannerFrame.contentDocument : this.bannerFrame.contentWindow.document;
 			this.bannerBody = this.bannerDocument.body;
 			this.canvas = this.bannerDocument.querySelector("canvas");
 			if (this.canvas && this.bannerBody) this.resizeBannerFrame();
+			if (this.bannerWindow) {
+				this.bannerWindow.onerror = () => {
+					//handle error
+				};
+			}
 		},
 		resizeBannerFrame() {
 			this.bannerFrame.style.display = "block";
@@ -41,11 +48,13 @@ export default {
 					ratio = this.maxBannerWidth / bannerWidth;
 				}
 			}
-
-			this.setPositionZero(this.bannerBody);
-			this.setPositionZero(this.canvas);
-			this.bannerBody.style.transform = "scale(" + ratio + ")";
-
+			if (this.type !== "veeva") {
+				this.setPositionZero(this.bannerBody);
+				this.setPositionZero(this.canvas);
+				this.bannerBody.style.transform = "scale(" + ratio + ")";
+			} else {
+				this.bannerBody.style.transformOrigin = "top left";
+			}
 			this.bannerFrame.style.width = bannerWidth * ratio + "px";
 			this.bannerFrame.style.height = bannerHeight * ratio + "px";
 		},
