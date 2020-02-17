@@ -11,7 +11,8 @@ export default new Vuex.Store({
 		},
 		veevaSlides: [],
 		simplePreviewBanner: null,
-		currentContentType: null
+		currentContentType: null,
+		sLength: 0
 	},
 	getters: {
 		tree: state => {
@@ -25,22 +26,25 @@ export default new Vuex.Store({
 		},
 		currentContentType: state => {
 			return state.currentContentType;
+		},
+		sLength: state => {
+			return state.sLength
 		}
 	},
 	mutations: {
 		createTree(state, tree) {
-			state.tree = tree;
+			Vue.set(state, "tree", tree);
 		},
 		createVeevaTree(state, veevaSlides) {
-			state.veevaSlides = veevaSlides;
+			Vue.set(state, "veevaSlides", veevaSlides);
 		},
 		setSimplePreviewBanner(state, config) {
-			state.simplePreviewBanner = config.banner;
-			state.currentContentType = config.type;
+			Vue.set(state, "simplePreviewBanner", config.banner);
+			Vue.set(state, "currentContentType", config.type);
 		},
 		clearSimplePreviewBanner(state) {
-			state.simplePreviewBanner = null;
-			state.currentContentType = null;
+			Vue.set(state, "simplePreviewBanner", null);
+			Vue.set(state, "currentContentType", null);
 		},
 		removeTheTrees(state) {
 			state.tree = {
@@ -50,6 +54,17 @@ export default new Vuex.Store({
 		},
 		changeSlidePosition(state, config) {
 			arrayMove.mutate(state.veevaSlides, config.slidePosition, config.newPosition);
+		},
+		createScreenShotsArray(state, config) {
+			Vue.set(state.veevaSlides[state.veevaSlides.indexOf(config.slide)], "screenShots", [])
+		},
+		screenGrabbed(state, config) {
+			state.veevaSlides[state.veevaSlides.indexOf(config.slide)].screenShots.push(config.shot);
+			state.sLength = state.veevaSlides[state.veevaSlides.indexOf(config.slide)].screenShots.length;
+		},
+		removeScreenShot(state, data) {
+			const screenShots = state.veevaSlides[state.veevaSlides.indexOf(data.slide)].screenShots;
+			screenShots.splice(screenShots.indexOf(data.screenShot), 1);
 		}
 	},
 	actions: {
@@ -70,6 +85,13 @@ export default new Vuex.Store({
 		},
 		changeSlidePosition({commit}, config) {
 			commit("changeSlidePosition", config);
+		},
+		screenGrabbed({commit}, config) {
+			if (!config.slide.screenShots) commit("createScreenShotsArray", config);
+			commit("screenGrabbed", config);
+		},
+		removeScreenShot({commit}, data) {
+			commit("removeScreenShot", data);
 		}
 	},
 	modules: {}

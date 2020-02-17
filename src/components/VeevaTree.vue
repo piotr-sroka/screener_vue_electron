@@ -21,7 +21,7 @@ export default {
 	methods: {
 		onPositionChanged(e) {
 			const slidePosition = e.slideId;
-			const newPosition = e.direction === "down" ? slidePosition + 1 === this.veevaSlides.length ? 0 : slidePosition + 1 : slidePosition - 1;
+			const newPosition = e.direction === "down" ? (slidePosition + 1 === this.veevaSlides.length ? 0 : slidePosition + 1) : slidePosition - 1;
 			this.$store.dispatch("changeSlidePosition", {slidePosition, newPosition});
 		}
 	},

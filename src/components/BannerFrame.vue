@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div :style="cssVars">
 		<iframe ref="frame" class="banner-frame" scrolling="no" frameborder="0" :src="banner.htmlPath || banner.indexFile" @load="checkCanvas" :width="canvas ? canvas.width : 0" :height="canvas ? canvas.height : 0"></iframe>
 	</div>
 </template>
@@ -14,6 +14,13 @@ export default {
 			bannerBody: null,
 			canvas: null
 		};
+	},
+	computed: {
+		cssVars() {
+			return {
+				"--p-events": this.type === "veeva" ? "all" : "none"
+			};
+		}
 	},
 	methods: {
 		reloadBanner() {
@@ -67,10 +74,15 @@ export default {
 				elem.style.padding = 0;
 				elem.style.transformOrigin = "top left";
 			}
+		},
+		grabScreen() {
+			const shot = this.canvas.toDataURL("image/png");
+			this.$parent.$emit("screen-grabbed", {target: {data: shot}});
 		}
 	},
 	mounted() {
 		this.$on("reload", this.reloadBanner);
+		this.$on("grab-screen", this.grabScreen);
 	},
 	watch: {
 		maxBannerWidth: function(val) {
@@ -86,6 +98,6 @@ export default {
 </script>
 <style scoped>
 .banner-frame {
-	pointer-events: none;
+	pointer-events: var(--p-events);
 }
 </style>

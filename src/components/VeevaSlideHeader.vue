@@ -7,20 +7,20 @@
 			<font-awesome-icon class="settings-icon" icon="eye" title="Preview asset" @click="previewBanner" />
 			<font-awesome-icon class="settings-icon" icon="camera" title="Automatic screenshot making" @click="$parent.$emit('auto-screen')" />
 		</div>
-        <div class="slide-settings" v-if="mode === 'screening'">
+		<div class="slide-settings" v-if="mode === 'screening'">
 			<font-awesome-icon class="settings-icon" icon="ban" title="Cancel" @click="$parent.$emit('auto-screen-cancel')" />
-            <Loader size="small" color="#B2DFDB" />
-        </div>
+			<Loader size="small" color="#B2DFDB" />
+		</div>
 	</header>
 </template>
 
 <script>
-import Loader  from "./Loader";
+import Loader from "./Loader";
 
 export default {
 	components: {
-        Loader
-    },
+		Loader
+	},
 	props: ["slide", "slideId", "mode"],
 	data() {
 		return {};
@@ -28,15 +28,13 @@ export default {
 	computed: {},
 	methods: {
 		previewBanner() {
-            this.$store.dispatch("setSimplePreviewBanner", {banner: this.slide, type: "veeva"});
-        },
-        changePosition(dir) {
-            this.$parent.$parent.$emit("change-position", {slideId: this.slideId, direction: dir});
-        }
+			this.$store.dispatch("setSimplePreviewBanner", {banner: this.slide, type: "veeva"});
+		},
+		changePosition(dir) {
+			this.$parent.$parent.$emit("change-position", {slideId: this.slideId, direction: dir});
+		}
 	},
-	mounted() {
-        console.log(this.mode)
-    }
+	mounted() {}
 };
 </script>
 
@@ -59,18 +57,18 @@ export default {
 	margin-right: auto;
 }
 .slide-settings {
-    display: flex;
-    align-items: center;    
+	display: flex;
+	align-items: center;
 }
 .settings-icon {
 	margin-right: 12px;
-    font-size: 1em;
-    height: 24px;
-    line-height: 24px;
-    vertical-align: middle;
+	font-size: 1em;
+	height: 24px;
+	line-height: 24px;
+	vertical-align: middle;
 	cursor: pointer;
 }
 .icon-big {
-    font-size: 1.6em;
+	font-size: 1.6em;
 }
 </style>

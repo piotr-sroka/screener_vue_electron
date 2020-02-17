@@ -7,21 +7,23 @@
 			<Loader v-if="generatingThumb" />
 		</div>
 		<ThumbGenerator v-if="generatingThumb" :slide="slide" v-on:thumb-generated="onThumbGenerated" />
-        <ScreenGrabber v-if="isScreeningRunning" :slide="slide" v-on:grab-screen="onSlideGrabbed" v-on:grab-end="stopAutoScreen" />
-        <div v-if="screenShots.length" class="screenshots-container">
-            <div class="screenshot" v-for="(screenShot, index) in screenShots" :key="index">
-                <img class="screenshot-image" :src="screenShot" alt="">
-            </div>
-        </div>
+		<ScreenGrabber v-if="isScreeningRunning" :slide="slide" v-on:grab-screen="onSlideGrabbed" v-on:grab-end="stopAutoScreen" />
+		<div v-if="slide.screenShots && slide.screenShots.length" class="screenshots-container" :sLength="sLength">
+			<ScreenShot v-for="(screenShot, index) in slide.screenShots" :screenShot="screenShot" :key="index" v-on:screenshot-preview="previewScreenShot" v-on:screenshot-remove="removeScreenShot" />
+		</div>
+		<FastPreview v-if="showFastPreview && slide.screenShots && slide.screenShots.length" :screenShots="slide.screenShots" :previewIndex="previewIndex" v-on:close="closePreview" v-on:change-preview="previewScreenShot" v-on:remove-preview="removeScreenShot" />
 	</div>
 </template>
 
 <script>
+import {mapGetters} from "vuex";
 import VeevaSlideHeader from "./VeevaSlideHeader";
 import IndexFile from "./IndexFile";
 import Loader from "./Loader";
 import ThumbGenerator from "./ThumbGenerator";
 import ScreenGrabber from "./ScreenGrabber";
+import ScreenShot from "./ScreenShot";
+import FastPreview from "./FastPreview";
 
 export default {
 	props: ["slide"],
@@ -29,23 +31,43 @@ export default {
 		VeevaSlideHeader,
 		IndexFile,
 		Loader,
-        ThumbGenerator,
-        ScreenGrabber
+		ThumbGenerator,
+		ScreenGrabber,
+		ScreenShot,
+		FastPreview
 	},
 	data() {
 		return {
 			defaultThumb: "",
 			generatingThumb: false,
-            isScreeningRunning: false,
-            screenShots: []
+			isScreeningRunning: false,
+			showFastPreview: false,
+			previewIndex: 0
 		};
 	},
 	computed: {
+		...mapGetters(["sLength"]),
 		mode() {
 			return this.isScreeningRunning ? "screening" : "normal";
 		}
 	},
 	methods: {
+		closePreview() {
+			this.showFastPreview = false;
+		},
+		previewScreenShot(screenShot) {
+			this.showFastPreview = true;
+			this.previewIndex = this.slide.screenShots.indexOf(screenShot);
+		},
+		removeScreenShot(screenShot) {
+			this.$store.dispatch("removeScreenShot", {slide: this.slide, screenShot});
+			const pi = this.previewIndex;
+			this.previewIndex = -1;
+			setTimeout(() => {
+                this.previewIndex = pi < this.slide.screenShots.length ? pi : this.slide.screenShots.length - 1;
+				this.$forceUpdate();
+			}, 10);
+		},
 		generateThumb() {
 			this.generatingThumb = true;
 		},
@@ -56,18 +78,20 @@ export default {
 			}
 		},
 		startAutoScreen() {
+			this.slide.screenShots = [];
 			this.isScreeningRunning = true;
-			console.log("START SCREENING...");
 		},
 		stopAutoScreen() {
 			this.isScreeningRunning = false;
-        },
-        onSlideGrabbed(e) {
-            this.screenShots.push(e.target.data);
-        }
+		},
+		onSlideGrabbed(e) {
+			this.$store.dispatch("screenGrabbed", {slide: this.slide, shot: e.target.data});
+			// if (!this.slide.screenShots) this.slide.screenShots = [];
+			// this.slide.screenShots.push(e.target.data);
+		}
 	},
 	mounted() {
-        this.screenShots = [];
+		this.screenShots = [];
 		this.$on("auto-screen", this.startAutoScreen);
 		this.$on("auto-screen-cancel", this.stopAutoScreen);
 	}
@@ -100,19 +124,7 @@ export default {
 	left: -99999999999999px;
 }
 .screenshots-container {
-    display: flex;
-    flex-wrap: wrap;
-}
-.screenshot {
-    width: 100px;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 12px;
-}
-.screenshot-image {
-    max-width: 100%;
-    max-height: 100%;
+	display: flex;
+	flex-wrap: wrap;
 }
 </style>

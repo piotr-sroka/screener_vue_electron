@@ -70,8 +70,17 @@ body.swal2-shown.swal2-height-auto {
 	color: #37474f;
 	height: 100%;
 }
+.scrollable #app {
+	overflow: hidden;
+}
 .ps {
 	height: Calc(100% - 166px);
+}
+.scrollable .ps {
+	height: unset;
+}
+.preview-box .ps {
+	height: unset;
 }
 .main,
 .drop-zone-container {

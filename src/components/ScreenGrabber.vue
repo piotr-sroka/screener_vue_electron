@@ -1,6 +1,6 @@
 <template>
 	<div class="grabber-frame">
-		<iframe :src="slide.htmlPath || slide.indexFile" frameborder="0" @load="onIframeLoad" width="500" height="300"></iframe>
+		<iframe :src="slide.htmlPath || slide.indexFile" frameborder="0" @load="onIframeLoad" width="200" height="150"></iframe>
 	</div>
 </template>
 <script>
@@ -12,14 +12,15 @@ export default {
 			frameDocument: null,
 			canvas: null,
 			slideContent: null,
-			pagesToGrab: []
+			pagesToGrab: [],
+			screenShots: []
 		};
 	},
 	methods: {
 		onIframeLoad(e) {
 			this.frameWindow = e.target.contentWindow;
 			this.frameDocument = e.target.contentDocument ? e.target.contentDocument : e.target.contentWindow.document;
-			setTimeout(this.getConfig, 1000);
+			setTimeout(this.getConfig, 800);
 		},
 		getConfig() {
 			const config = this.frameWindow.getConfig().slidesConfig[this.slide.name];
@@ -43,29 +44,59 @@ export default {
 			this.grabPage(0);
 		},
 		addPageToGrab(type, mc) {
-			this.pagesToGrab.push({type, mc});
+			if (!this.pagesToGrab.find(p => p.mc === mc)) {
+				this.pagesToGrab.push({type, mc});
+			}
+		},
+		grabSubPage(currentPage, page) {
+			let currentFrame = page.mc.currentFrame;
+			this.takeScreenShot();
+			currentFrame++;
+			if (currentFrame < page.mc.timeline.duration) {
+				page.mc.gotoAndStop(currentFrame);
+				setTimeout(() => {
+					this.grabSubPage(currentPage, page);
+				}, 50);
+			} else {
+				this.hideMc(page.type, page.mc);
+				currentPage++;
+				this.checkNextPage(currentPage);
+			}
 		},
 		grabPage(index) {
 			let currentPage = index;
 			const page = this.pagesToGrab[currentPage];
 			this.showMc(page.type, page.mc);
-			setTimeout(() => {
-				const shot = this.canvas.toDataURL("image/png");
-				this.$emit("grab-screen", {
-					target: {
-						data: shot
-					}
-				});
-				this.hideMc(page.type, page.mc);
-				currentPage++;
-				if (currentPage < this.pagesToGrab.length) {
-					setTimeout(() => {
-						this.grabPage(currentPage);
-					}, 50);
-				} else {
-                    this.$emit("grab-end");
-                }
-			}, 50);
+			if (!page.mc || (page.mc && page.mc.timeline.duration < 2)) {
+				setTimeout(() => {
+					this.takeScreenShot();
+					this.hideMc(page.type, page.mc);
+					currentPage++;
+					this.checkNextPage(currentPage);
+				}, 50);
+			} else if (page.mc && page.mc.timeline.duration > 1) {
+				setTimeout(() => {
+					this.grabSubPage(currentPage, page);
+				}, 50);
+			}
+		},
+		checkNextPage(currentPage) {
+			if (currentPage < this.pagesToGrab.length) {
+				setTimeout(() => {
+					this.grabPage(currentPage);
+				}, 50);
+			} else {
+				this.$emit("grab-end");
+			}
+		},
+		takeScreenShot() {
+			const shot = this.canvas.toDataURL("image/png");
+			this.screenShots.push(shot);
+			this.$emit("grab-screen", {
+				target: {
+					data: shot
+				}
+			});
 		},
 		showMc(type, mc) {
 			if (type === "popup") {
@@ -73,10 +104,10 @@ export default {
 				mc.visible = true;
 				mc.scaleX = 1;
 				mc.scaleY = 1;
-            }
-            if (type === "reference") {
-                mc.parent.y = 0;
-            }
+			}
+			if (type === "reference") {
+				mc.parent.y = 0;
+			}
 		},
 		hideMc(type, mc) {
 			if (type === "popup") {
@@ -85,9 +116,9 @@ export default {
 				mc.scaleX = 0;
 				mc.scaleY = 0;
 			}
-            if (type === "reference") {
-                mc.parent.y = 1536;
-            }
+			if (type === "reference") {
+				mc.parent.y = 1536;
+			}
 		}
 	}
 };
