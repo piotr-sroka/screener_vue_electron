@@ -5,13 +5,18 @@
 </template>
 
 <script>
+import {mapGetters} from "vuex";
+
 export default {
-    props: ["image_url", "link"],
-    methods: {
-        onClick() {
-            if (this.$route.path !== this.link) this.$router.push(this.link);      
-        }
-    }
+	props: ["image_url", "link"],
+	computed: {
+		...mapGetters(["currentLocation"])
+	},
+	methods: {
+		onClick() {
+			if (this.currentLocation !== this.link) this.$store.dispatch("setLocation", this.link);
+		}
+	}
 };
 </script>
 

@@ -1,7 +1,7 @@
 <template>
 	<div class="main-menu">
-		<MainMenuItem image_url="static/images/html5_logo.png" link="/html5" />
-		<MainMenuItem image_url="static/images/veeva_logo.png" link="/veeva" />
+		<MainMenuItem image_url="static/images/html5_logo.png" link="html5" />
+		<MainMenuItem image_url="static/images/veeva_logo.png" link="veeva" />
 	</div>
 </template>
 

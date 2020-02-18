@@ -1,8 +1,32 @@
 "use strict";
 
-import {app, protocol, BrowserWindow} from "electron";
+import {app, autoUpdater, dialog, protocol, BrowserWindow} from "electron";
 import {createProtocol, installVueDevtools} from "vue-cli-plugin-electron-builder/lib";
 const isDevelopment = process.env.NODE_ENV !== "production";
+// const server = "https://screener.now.sh";
+// const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
+
+// autoUpdater.setFeedURL(feed);
+
+// if (require("electron-squirrel-startup")) app.quit();
+
+// setInterval(() => {
+// 	autoUpdater.checkForUpdates();
+// }, 10000);
+
+// autoUpdater.on("update-available", event => {
+// 	const dialogOptions = {
+// 		type: "info",
+// 		buttons: "ok",
+// 		title: "Application Update",
+// 		message: "OK",
+// 		detail: "New version available."
+// 	};
+// 	dialog.showMessageBox(dialogOptions).then(returnValue => {
+// 		// if (returnValue.response === 0) autoUpdater
+// 		console.log(returnValue);
+// 	});
+// });
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -39,7 +63,7 @@ function createWindow() {
 	});
 }
 
-app.commandLine.appendSwitch('disable-site-isolation-trials');
+app.commandLine.appendSwitch("disable-site-isolation-trials");
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {

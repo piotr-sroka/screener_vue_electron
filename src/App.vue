@@ -3,7 +3,9 @@
 		<Header v-if="headerImage !== ''" :image_url="headerImage" />
 		<perfect-scrollbar>
 			<main class="main">
-				<router-view></router-view>
+				<Main v-if="currentLocation === 'home'" />
+				<HTML5 v-if="currentLocation === 'html5'" />
+				<Veeva v-if="currentLocation === 'veeva'" />
 			</main>
 		</perfect-scrollbar>
 		<footer class="footer"></footer>
@@ -14,7 +16,9 @@
 <script>
 import "reset-css";
 import {mapGetters} from "vuex";
-
+import Main from "./components/Main";
+import HTML5 from "./components/HTML5";
+import Veeva from "./components/Veeva";
 import Header from "./components/Header";
 import SimplePreview from "./components/SimplePreview";
 
@@ -22,17 +26,20 @@ export default {
 	name: "app",
 	components: {
 		Header,
-		SimplePreview
+		SimplePreview,
+		Main,
+		Veeva,
+		HTML5
 	},
 	computed: {
-		...mapGetters(["tree", "simplePreviewBanner"]),
+		...mapGetters(["tree", "simplePreviewBanner", "currentLocation"]),
 		headerImage() {
 			let imagePath = "";
-			switch (this.$route.path) {
-				case "/html5":
+			switch (this.currentLocation) {
+				case "html5":
 					imagePath = "static/images/html5_logo.png";
 					break;
-				case "/veeva":
+				case "veeva":
 					imagePath = "static/images/veeva_logo.png";
 					break;
 			}

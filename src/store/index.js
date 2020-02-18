@@ -12,7 +12,8 @@ export default new Vuex.Store({
 		veevaSlides: [],
 		simplePreviewBanner: null,
 		currentContentType: null,
-		sLength: 0
+		sLength: 0,
+		currentLocation: "home"
 	},
 	getters: {
 		tree: state => {
@@ -28,7 +29,10 @@ export default new Vuex.Store({
 			return state.currentContentType;
 		},
 		sLength: state => {
-			return state.sLength
+			return state.sLength;
+		},
+		currentLocation: state => {
+			return state.currentLocation;
 		}
 	},
 	mutations: {
@@ -56,7 +60,7 @@ export default new Vuex.Store({
 			arrayMove.mutate(state.veevaSlides, config.slidePosition, config.newPosition);
 		},
 		createScreenShotsArray(state, config) {
-			Vue.set(state.veevaSlides[state.veevaSlides.indexOf(config.slide)], "screenShots", [])
+			Vue.set(state.veevaSlides[state.veevaSlides.indexOf(config.slide)], "screenShots", []);
 		},
 		screenGrabbed(state, config) {
 			state.veevaSlides[state.veevaSlides.indexOf(config.slide)].screenShots.push(config.shot);
@@ -65,6 +69,9 @@ export default new Vuex.Store({
 		removeScreenShot(state, data) {
 			const screenShots = state.veevaSlides[state.veevaSlides.indexOf(data.slide)].screenShots;
 			screenShots.splice(screenShots.indexOf(data.screenShot), 1);
+		},
+		setLocation(state, url) {
+			Vue.set(state, "currentLocation", url);
 		}
 	},
 	actions: {
@@ -92,6 +99,9 @@ export default new Vuex.Store({
 		},
 		removeScreenShot({commit}, data) {
 			commit("removeScreenShot", data);
+		},
+		setLocation({commit}, url) {
+			commit("setLocation", url);
 		}
 	},
 	modules: {}

@@ -10,7 +10,7 @@
 		</div>
 		<perfect-scrollbar>
 			<div class="screenshots-container" @click.stop>
-				<ScreenShot v-for="(screenShot, index) in screenShots" :class="index == previewIndex ? 'active' : ''" type="fast" :screenShot="screenShot" :key="index" v-on:screenshot-preview="previewScreenShot" v-on:screenshot-remove="removeScreenShot" />
+				<ScreenShot v-for="(screenShot, index) in screenShots" :class="index == previewIndex ? 'active' : ''" type="fast" :screenShot="mode && mode === 'all' ? screenShot.screenshot : screenShot" :key="index" v-on:screenshot-preview="previewScreenShot" v-on:screenshot-remove="removeScreenShot" />
 			</div>
 		</perfect-scrollbar>
 	</div>
@@ -22,11 +22,14 @@ export default {
 	components: {
 		ScreenShot
 	},
-	props: ["screenShots", "previewIndex"],
+	props: ["screenShots", "previewIndex", "mode"],
 	computed: {
 		currentPreviewedScreenShot() {
+            if (this.mode && this.mode === "all") {
+                return this.screenShots[this.previewIndex].screenshot;
+            }
 			return this.screenShots[this.previewIndex];
-		}
+        }
 	},
 	methods: {
 		closePreview(e) {

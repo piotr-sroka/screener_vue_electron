@@ -2,7 +2,7 @@
 	<div class="slide-box">
 		<VeevaSlideHeader ref="slideHeader" :slide="slide" :slideId="$vnode.key" :mode="mode" />
 		<div class="slide-thumb">
-			<img v-if="slide.thumb" class="thumb-image" :src="slide.thumb" alt="" />
+			<img v-if="slide.thumb && !generatingThumb" class="thumb-image" :src="slide.thumb" alt="" />
 			<font-awesome-icon v-if="!slide.thumb && !generatingThumb" class="slide-thumb loader-icon" icon="image" title="Generate thumbs" @click="generateThumb" />
 			<Loader v-if="generatingThumb" />
 		</div>
@@ -64,12 +64,12 @@ export default {
 			const pi = this.previewIndex;
 			this.previewIndex = -1;
 			setTimeout(() => {
-                this.previewIndex = pi < this.slide.screenShots.length ? pi : this.slide.screenShots.length - 1;
+				this.previewIndex = pi < this.slide.screenShots.length ? pi : this.slide.screenShots.length - 1;
 				this.$forceUpdate();
-			}, 10);
+			}, 200);
 		},
 		generateThumb() {
-			this.generatingThumb = true;
+            this.generatingThumb = true;
 		},
 		onThumbGenerated(e) {
 			if (e.type === "thumb") {
@@ -78,11 +78,13 @@ export default {
 			}
 		},
 		startAutoScreen() {
+			this.showFastPreview = false;
 			this.slide.screenShots = [];
 			this.isScreeningRunning = true;
 		},
 		stopAutoScreen() {
-			this.isScreeningRunning = false;
+            this.isScreeningRunning = false;
+            this.$root.$emit("autoscreen-end");
 		},
 		onSlideGrabbed(e) {
 			this.$store.dispatch("screenGrabbed", {slide: this.slide, shot: e.target.data});
