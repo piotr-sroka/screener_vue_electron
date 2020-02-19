@@ -2,32 +2,7 @@
 
 import {app, dialog, protocol, BrowserWindow} from "electron";
 import {createProtocol, installVueDevtools} from "vue-cli-plugin-electron-builder/lib";
-import {autoUpdater} from "electron-updater";
 const isDevelopment = process.env.NODE_ENV !== "production";
-const server = "https://screener.now.sh";
-const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
-
-// autoUpdater.setFeedURL(feed);
-
-// if (require("electron-squirrel-startup")) app.quit();
-
-// setInterval(() => {
-// 	autoUpdater.checkForUpdates();
-// }, 10000);
-
-autoUpdater.on("update-available", event => {
-	const dialogOptions = {
-		type: "info",
-		buttons: "ok",
-		title: "Application Update",
-		message: "OK",
-		detail: "New version available."
-	};
-	dialog.showMessageBox(dialogOptions).then(returnValue => {
-		// if (returnValue.response === 0) autoUpdater
-		console.log(returnValue);
-	});
-});
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -41,7 +16,7 @@ function createWindow() {
 	win = new BrowserWindow({
 		width: 1400,
 		height: 800,
-		minWidth: 800,
+		minWidth: 1000,
 		minHeight: 800,
 		webPreferences: {
 			nodeIntegration: true,
@@ -70,9 +45,9 @@ app.commandLine.appendSwitch("disable-site-isolation-trials");
 app.on("window-all-closed", () => {
 	// On macOS it is common for applications and their menu bar
 	// to stay active until the user quits explicitly with Cmd + Q
-	if (process.platform !== "darwin") {
-		app.quit();
-	}
+	// if (process.platform !== "darwin") {
+	// 	app.quit();
+	// }
 });
 
 app.on("activate", () => {

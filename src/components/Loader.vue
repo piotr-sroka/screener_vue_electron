@@ -18,7 +18,7 @@ export default {
 		cssVars() {
 			return {
 				"--bg-color": this.color || "#004D40",
-				"--scale": this.size === "small" ? 0.25 : 1
+				"--scale": this.size === "small" ? 0.25 : this.size === "m-small" ? 0.4 : 1
 			};
 		}
 	}

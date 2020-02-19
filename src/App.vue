@@ -1,5 +1,5 @@
 <template>
-	<div id="app">
+	<div id="app" :class="currentLocation === 'home' ? 'no-header' : ''">
 		<Header v-if="headerImage !== ''" :image_url="headerImage" />
 		<perfect-scrollbar>
 			<main class="main">
@@ -8,7 +8,9 @@
 				<Veeva v-if="currentLocation === 'veeva'" />
 			</main>
 		</perfect-scrollbar>
-		<footer class="footer"></footer>
+		<footer class="footer">
+			<Updater />
+		</footer>
 		<SimplePreview v-if="simplePreviewBanner" />
 	</div>
 </template>
@@ -21,6 +23,7 @@ import HTML5 from "./components/HTML5";
 import Veeva from "./components/Veeva";
 import Header from "./components/Header";
 import SimplePreview from "./components/SimplePreview";
+import Updater from "./components/Updater";
 
 export default {
 	name: "app",
@@ -29,7 +32,8 @@ export default {
 		SimplePreview,
 		Main,
 		Veeva,
-		HTML5
+		HTML5,
+		Updater
 	},
 	computed: {
 		...mapGetters(["tree", "simplePreviewBanner", "currentLocation"]),
@@ -76,12 +80,17 @@ body.swal2-shown.swal2-height-auto {
 	text-align: center;
 	color: #37474f;
 	height: 100%;
+	position: relative;
+	overflow: hidden;
 }
 .scrollable #app {
 	overflow: hidden;
 }
 .ps {
-	height: Calc(100% - 166px);
+	height: Calc(100% - 126px);
+}
+.no-header .ps {
+	height: Calc(100% - 40px);
 }
 .scrollable .ps {
 	height: unset;
@@ -100,6 +109,9 @@ body.swal2-shown.swal2-height-auto {
 	height: 100%;
 }
 .footer {
-	height: 80px;
+	height: 40px;
+}
+.swal2-header, .swal2-content, .swal2-actions {
+	font-family: "Avenir", Helvetica, Arial, sans-serif;
 }
 </style>

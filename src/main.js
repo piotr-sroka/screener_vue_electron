@@ -5,7 +5,7 @@ import App from "./App.vue";
 import VueSweetalert2 from "vue-sweetalert2";
 import PerfectScrollbar from "vue2-perfect-scrollbar";
 import {library} from "@fortawesome/fontawesome-svg-core";
-import {faCaretUp, faCaretDown, faInfoCircle, faEye, faRedo, faTimes, faArrowAltCircleLeft, faImage, faCamera, faBan, faCog, faSave, faFilePdf} from "@fortawesome/free-solid-svg-icons";
+import {faCaretUp, faCaretDown, faInfoCircle, faEye, faRedo, faTimes, faArrowAltCircleLeft, faImage, faCamera, faBan, faCog, faSave, faFilePdf, faDownload} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -32,7 +32,7 @@ const options = {
 	cancelButtonColor: "#004D40"
 };
 
-library.add(faCaretUp, faCaretDown, faInfoCircle, faEye, faRedo, faTimes, faArrowAltCircleLeft, faImage, faCamera, faBan, faCog, faSave, faFilePdf);
+library.add(faCaretUp, faCaretDown, faInfoCircle, faEye, faRedo, faTimes, faArrowAltCircleLeft, faImage, faCamera, faBan, faCog, faSave, faFilePdf, faDownload);
 
 // Vue.use(VueRouter);
 Vue.use(VueSweetalert2, options);
