@@ -1,10 +1,11 @@
 "use strict";
 
-import {app, autoUpdater, dialog, protocol, BrowserWindow} from "electron";
+import {app, dialog, protocol, BrowserWindow} from "electron";
 import {createProtocol, installVueDevtools} from "vue-cli-plugin-electron-builder/lib";
+import {autoUpdater} from "electron-updater";
 const isDevelopment = process.env.NODE_ENV !== "production";
-// const server = "https://screener.now.sh";
-// const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
+const server = "https://screener.now.sh";
+const feed = `${server}/update/${process.platform}/${app.getVersion()}`;
 
 // autoUpdater.setFeedURL(feed);
 
@@ -14,19 +15,19 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 // 	autoUpdater.checkForUpdates();
 // }, 10000);
 
-// autoUpdater.on("update-available", event => {
-// 	const dialogOptions = {
-// 		type: "info",
-// 		buttons: "ok",
-// 		title: "Application Update",
-// 		message: "OK",
-// 		detail: "New version available."
-// 	};
-// 	dialog.showMessageBox(dialogOptions).then(returnValue => {
-// 		// if (returnValue.response === 0) autoUpdater
-// 		console.log(returnValue);
-// 	});
-// });
+autoUpdater.on("update-available", event => {
+	const dialogOptions = {
+		type: "info",
+		buttons: "ok",
+		title: "Application Update",
+		message: "OK",
+		detail: "New version available."
+	};
+	dialog.showMessageBox(dialogOptions).then(returnValue => {
+		// if (returnValue.response === 0) autoUpdater
+		console.log(returnValue);
+	});
+});
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
