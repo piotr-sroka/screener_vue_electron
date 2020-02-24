@@ -94,7 +94,8 @@ export default {
 			this.screenShots.push(shot);
 			this.$emit("grab-screen", {
 				target: {
-					data: shot
+					data: shot,
+					size: {width: this.canvas.width, height: this.canvas.height}
 				}
 			});
 		},

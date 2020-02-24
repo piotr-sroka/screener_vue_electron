@@ -61,7 +61,7 @@ export default {
 			}
 		},
 		onScreenGrabbed(e) {
-			this.$store.dispatch("screenGrabbed", {slide: this.simplePreviewBanner, shot: e.target.data});
+			this.$store.dispatch("screenGrabbed", {slide: this.simplePreviewBanner, shot: e.target.data, size: e.target.size});
 			setTimeout(() => {
 				this.isGrabbingScreen = false;
 			}, 500);

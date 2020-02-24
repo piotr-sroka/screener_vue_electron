@@ -87,7 +87,7 @@ export default {
             this.$root.$emit("autoscreen-end");
 		},
 		onSlideGrabbed(e) {
-			this.$store.dispatch("screenGrabbed", {slide: this.slide, shot: e.target.data});
+			this.$store.dispatch("screenGrabbed", {slide: this.slide, shot: e.target.data, size: e.target.size});
 			// if (!this.slide.screenShots) this.slide.screenShots = [];
 			// this.slide.screenShots.push(e.target.data);
 		}

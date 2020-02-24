@@ -12,6 +12,7 @@
 			<Updater />
 		</footer>
 		<SimplePreview v-if="simplePreviewBanner" />
+		<Saver />
 	</div>
 </template>
 
@@ -24,6 +25,7 @@ import Veeva from "./components/Veeva";
 import Header from "./components/Header";
 import SimplePreview from "./components/SimplePreview";
 import Updater from "./components/Updater";
+import Saver from "./components/Saver";
 
 export default {
 	name: "app",
@@ -33,7 +35,8 @@ export default {
 		Main,
 		Veeva,
 		HTML5,
-		Updater
+		Updater,
+		Saver
 	},
 	computed: {
 		...mapGetters(["tree", "simplePreviewBanner", "currentLocation"]),

@@ -64,23 +64,28 @@ export default {
 			this.previewIndex = this.allScreenShots.indexOf(this.allScreenShots.find(s => s.screenshot === screenShot));
 		},
 		removeScreenShot(screenShot) {
-			const slide = this.veevaSlides.find(slide => {
-				console.log(slide);
-				return slide.screenShots.find(s => s === screenShot);
-			});
-			// console.log(this.allScreenShots.find(s => s.screenshot === screenShot));
-			// this.$store.dispatch("removeScreenShot", {slide, screenShot});
-			const pi = this.previewIndex;
-			console.log(this.allScreenShots.length)
-			this.previewIndex = -1;
 			setTimeout(() => {
-				console.log(pi < this.allScreenShots.length)
-			// 	this.previewIndex = pi < this.allScreenShots.length ? pi : this.allScreenShots.length - 1;
+				const slide = this.veevaSlides.find(slide => {
+					if (slide.screenShots) {
+						return slide.screenShots.find(s => s === screenShot);
+					} else {
+						return null;
+					}
+				});
+				this.$store.dispatch("removeScreenShot", {slide, screenShot});
+				this.$refs[slide.name][0].$forceUpdate();
+			}, 100);
+			// slide.screenShots.splice(slide.screenShots.indexOf(screenShot), 1);
+			// this.showFastPreview = false;
+			// setTimeout(() => {
+			// 	this.showFastPreview = true;
 			// 	this.$forceUpdate();
-			}, 200);
+			// }, 150);
+			// console.log(screenShot);
 		}
 	},
 	mounted() {
+		this.allScreenShots = [];
 		this.$on("change-position", this.onPositionChanged);
 		this.$root.$on("create-previews-for-all", this.createQueueToCreatePreviews);
 		this.$root.$on("run-automatic-screenshots-for-all", this.runQueueToAutomaticScreenshots);

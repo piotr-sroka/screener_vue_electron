@@ -1,6 +1,6 @@
 "use strict";
 
-import {app, dialog, protocol, BrowserWindow} from "electron";
+import {app, protocol, BrowserWindow, Menu} from "electron";
 import {createProtocol, installVueDevtools} from "vue-cli-plugin-electron-builder/lib";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -20,8 +20,10 @@ function createWindow() {
 		minHeight: 800,
 		webPreferences: {
 			nodeIntegration: true,
-			webSecurity: false
-		}
+			webSecurity: false,
+			nodeIntegrationInWorker: true
+		},
+		devTools: false
 	});
 
 	if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -32,6 +34,11 @@ function createWindow() {
 		createProtocol("app");
 		// Load the index.html when not in development
 		win.loadURL("app://./index.html");
+		win.webContents.on("devtools-opened", () => {
+			win.webContents.closeDevTools();
+		});
+		win.removeMenu();
+		win.setMenu(null);
 	}
 
 	win.on("closed", () => {
@@ -45,9 +52,9 @@ app.commandLine.appendSwitch("disable-site-isolation-trials");
 app.on("window-all-closed", () => {
 	// On macOS it is common for applications and their menu bar
 	// to stay active until the user quits explicitly with Cmd + Q
-	// if (process.platform !== "darwin") {
-	// 	app.quit();
-	// }
+	if (process.platform !== "darwin") {
+		app.quit();
+	}
 });
 
 app.on("activate", () => {

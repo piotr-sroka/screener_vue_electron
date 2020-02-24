@@ -1,9 +1,12 @@
 <template>
 	<div class="footer-container">
 		<div class="info-container" :class="isNewVersionAvailable ? 'shown' : ''">
-			<font-awesome-icon class="info-icon" icon="info-circle" />
-			<p class="info-title">New version available</p>
-			<button class="info-download" @click="downloadNewVersion">Download and install <font-awesome-icon class="icon" icon="download" /></button>
+			<font-awesome-icon class="info-icon" icon="info-circle" v-if="!isDownloading" />
+			<p class="info-title" v-if="!isDownloading">New version available</p>
+			<button class="info-download" @click="downloadNewVersion" v-if="!isDownloading">Download and install <font-awesome-icon class="icon" icon="download" /></button>
+			<div class="info-loader" v-if="isDownloading">
+				<Loader class="logging-loader" size="m-small" color="#eceff1" />
+			</div>
 		</div>
 		<div class="info-container" :class="!isLoggedIn ? 'shown' : ''">
 			<font-awesome-icon class="info-icon" icon="info-circle" />
@@ -46,7 +49,8 @@ export default {
 			loggingIn: false,
 			newVersionFileURL: "",
 			FTP: null,
-			newVersionFileBuffer: null
+			newVersionFileBuffer: null,
+			isDownloading: false
 		};
 	},
 	methods: {
@@ -61,7 +65,7 @@ export default {
 					localStorage.setItem("credentials", credentials);
 					setTimeout(() => {
 						this.checkIfNewVersion(list[0]);
-					}, 500);
+					}, 1500);
 				});
 			});
 			this.FTP.connect({
@@ -87,46 +91,39 @@ export default {
 				setTimeout(() => {
 					this.isNewVersionAvailable = true;
 					this.newVersionFileURL = file;
-				}, 500);
+				}, 1500);
 			}
 		},
 		downloadNewVersion() {
+			this.isDownloading = true;
 			const appPath = remote.app.getPath("userData");
 			const tempDir = path.join(appPath, "installer");
 			if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 			this.FTP.get(`${this.actualVersionDirectory}/${this.newVersionFileURL.name}`, (err, stream) => {
 				if (err) console.log(err);
-				const newVersionFilePath = path.join(tempDir, this.newVersionFileURL.name);
+				const encodedFileName = this.newVersionFileURL.name.replace(/ /g, "_");
+				const newVersionFilePath = path.join(tempDir, encodedFileName);
 				stream.once("close", () => {
 					this.FTP.end();
 					setTimeout(() => {
-						this.tryToInstall(newVersionFilePath);
+						this.tryToInstall(tempDir, encodedFileName);
 					}, 2000);
 				});
 				stream.pipe(fs.createWriteStream(newVersionFilePath));
 			});
 		},
-		tryToInstall(path) {
-			// child.execFile(path, (err, data) => {
-			// 	if (err) {
-			// 		return this.$swal({
-			// 			title: "Ooops...",
-			// 			text: "I cannot open downloaded file. Please reopen app and try to download again.",
-			// 			icon: "error"
-			// 		});
-			// 	}
-			// });
-			//              ******************************              //
-			//                                                          //
-			//                                                          //
-			//                                                          //
-			//                                                          //
-			//               !!!AUTO UPDATER FROM TEMP!!!               //
-			//                                                          //
-			//                                                          //
-			//                                                          //
-			//                                                          //
-			//              ******************************              //
+		tryToInstall(dir, newVersionFileName) {
+			const batFile = path.join(dir, "installer.bat");
+			fs.writeFileSync(batFile, `start /d "${dir}" ${newVersionFileName}`);
+			child.execFile(batFile, (err, data) => {
+				if (err) {
+					return this.$swal({
+						title: "Ooops...",
+						text: "I cannot open downloaded file. Please reopen app and try to download again.",
+						icon: "error"
+					});
+				}
+			});
 		}
 	},
 	mounted() {

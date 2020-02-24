@@ -2,14 +2,14 @@
 	<div class="screenshot">
 		<div class="options">
 			<font-awesome-icon class="option-icon" icon="eye" title="Preview frame" @click="onPreviewClick" v-if="type !== 'fast'" />
-			<font-awesome-icon class="option-icon" icon="times" title="Delete frame" @click="onRemoveClick" />
+			<font-awesome-icon class="option-icon" icon="times" title="Delete frame" @click="onRemoveClick" v-if="type !== 'fast'" />
 		</div>
 		<img class="screenshot-image" :src="screenShot" alt="" @click="onPreviewClick" />
 	</div>
 </template>
 <script>
 export default {
-	props: ["screenShot", "type"],
+	props: ["screenShot", "type", "mode"],
 	methods: {
 		onPreviewClick() {
 			this.$emit("screenshot-preview", this.screenShot);

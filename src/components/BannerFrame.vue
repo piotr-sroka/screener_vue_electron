@@ -77,7 +77,7 @@ export default {
 		},
 		grabScreen() {
 			const shot = this.canvas.toDataURL("image/png");
-			this.$parent.$emit("screen-grabbed", {target: {data: shot}});
+			this.$parent.$emit("screen-grabbed", {target: {data: shot, size: {width: this.canvas.width, height: this.canvas.height}}});
 		}
 	},
 	mounted() {

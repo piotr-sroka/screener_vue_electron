@@ -10,13 +10,14 @@
 		</div>
 		<perfect-scrollbar>
 			<div class="screenshots-container" @click.stop>
-				<ScreenShot v-for="(screenShot, index) in screenShots" :class="index == previewIndex ? 'active' : ''" type="fast" :screenShot="mode && mode === 'all' ? screenShot.screenshot : screenShot" :key="index" v-on:screenshot-preview="previewScreenShot" v-on:screenshot-remove="removeScreenShot" />
+				<ScreenShot v-for="(screenShot, index) in screenShots" :class="index == previewIndex ? 'active' : ''" type="fast" :mode="mode" :screenShot="mode && mode === 'all' ? screenShot.screenshot : screenShot" :key="index" v-on:screenshot-preview="previewScreenShot" v-on:screenshot-remove="removeScreenShot" />
 			</div>
 		</perfect-scrollbar>
 	</div>
 </template>
 <script>
 import ScreenShot from "./ScreenShot";
+import {mapGetters} from "vuex";
 
 export default {
 	components: {
@@ -24,12 +25,13 @@ export default {
 	},
 	props: ["screenShots", "previewIndex", "mode"],
 	computed: {
+		...mapGetters(["veevaSlides"]),
 		currentPreviewedScreenShot() {
-            if (this.mode && this.mode === "all") {
-                return this.screenShots[this.previewIndex].screenshot;
-            }
+			if (this.mode && this.mode === "all") {
+				return this.screenShots[this.previewIndex].screenshot;
+			}
 			return this.screenShots[this.previewIndex];
-        }
+		}
 	},
 	methods: {
 		closePreview(e) {
@@ -40,10 +42,9 @@ export default {
 			// this.showFastPreview = true;
 		},
 		removeScreenShot(screenShot) {
-            this.$emit("remove-preview", screenShot);
-			this.$forceUpdate();
-			// this.$store.dispatch("removeScreenShot", {slide: this.slide, screenShot});
-			// this.$forceUpdate();
+			this.screenShots.splice(this.screenShots.indexOf(screenShot), 1);
+			this.$emit("remove-preview", screenShot);
+			// this.$store.dispatch("removeScreenShot", {slide: null, screenShot});
 		},
 		toggleBodyClass(addRemoveClass, className) {
 			const el = document.body;
@@ -53,12 +54,12 @@ export default {
 				el.classList.remove(className);
 			}
 		}
-    },
-    watch: {
-        previewIndex: function(val) {
-            this.$forceUpdate();
-        }
-    },
+	},
+	watch: {
+		previewIndex: function(val) {
+			this.$forceUpdate();
+		}
+	},
 	mounted() {
 		this.toggleBodyClass("addClass", "scrollable");
 	},
@@ -76,6 +77,7 @@ export default {
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.8);
 	color: #eceff1;
+	z-index: 9;
 }
 .preview-screenshot {
 	display: flex;

@@ -3,6 +3,9 @@
 		<img class="header-image" :src="image_url" alt="" />
 		<div @click="goBack" class="header-back"><font-awesome-icon icon="arrow-alt-circle-left" title="Back to Home" /></div>
 		<div class="header-menu">
+			<div class="loader-container">
+				<Loader size="m-small" v-show="isWorking" />
+			</div>
 			<font-awesome-icon class="menu-icon" icon="cog" title="Preview asset" v-show="tree.campaigns.length || veevaSlides.length" />
 			<div class="all-menu">
 				<div class="menu-item" @click="createPreviewsForAll">
@@ -28,16 +31,21 @@
 
 <script>
 import {mapGetter, mapGetters} from "vuex";
+import Loader from "./Loader";
 
 export default {
 	props: ["image_url", "title"],
+	components: {
+		Loader
+	},
 	data() {
 		return {
-			allMenuOpened: false
+			allMenuOpened: false,
+			isWorking: false
 		};
 	},
 	computed: {
-		...mapGetters(["tree", "veevaSlides"])
+		...mapGetters(["tree", "veevaSlides", "allScreenShots"])
 	},
 	methods: {
 		goBack() {
@@ -52,7 +60,18 @@ export default {
 		previewAll() {
 			this.$root.$emit("preview-all");
 		},
-		saveAllToPdf() {}
+		saveAllToPdf() {
+			this.$store.dispatch("setAllScreenShots");
+			if (this.allScreenShots.length) {
+				this.isWorking = true;
+				this.$root.$emit("save-all-to-pdf");
+			}
+		}
+	},
+	mounted() {
+		this.$root.$on("pdf-saved", () => {
+			this.isWorking = false;
+		});
 	}
 };
 </script>
@@ -91,7 +110,7 @@ export default {
 }
 .menu-icon {
 	transition: transform 0.2s linear;
-	z-index: 999;
+	z-index: 8;
 	margin-left: 12px;
 	cursor: pointer;
 }
@@ -132,5 +151,13 @@ export default {
 	font-size: 1.4em;
 	width: 30px;
 	text-align: center;
+}
+.header-menu {
+	display: flex;
+	align-items: center;
+}
+.loader-container {
+	align-items: center;
+	display: flex;
 }
 </style>
