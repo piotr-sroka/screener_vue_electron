@@ -89,6 +89,7 @@ export default {
 					const language = pathFromCampaign.find(part => Regex.isLanguage.test(part));
 					const size = pathFromCampaign.find(part => Regex.isSize.test(part));
 					const fileName = pathFromCampaign.find(part => Regex.isFile.test(part));
+					const screenShots = [];
 
 					const nc_campaign = `${campaignName}_`;
 					const nc_html5 = html5 ? `${html5}_` : "";
@@ -96,7 +97,7 @@ export default {
 					const nc_size = size ? `${size}_` : "";
 					const nc_language = language ? `${language}` : "";
 					const nc_name = `${nc_campaign}${nc_variant}${nc_html5}${nc_size}${nc_language}`.replace(/ /g, "");
-					return {campaignName, variant, language, size, fileName, htmlPath, nc_name};
+					return {campaignName, variant, language, size, fileName, htmlPath, screenShots, nc_name};
 				})
 				.forEach(fileInfo => {
 					if (!this.tree.campaigns.find(c => c.name === fileInfo.campaignName)) this.tree.campaigns.push({name: fileInfo.campaignName});

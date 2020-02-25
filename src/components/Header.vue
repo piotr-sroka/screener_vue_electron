@@ -8,21 +8,33 @@
 			</div>
 			<font-awesome-icon class="menu-icon" icon="cog" title="Preview asset" v-show="tree.campaigns.length || veevaSlides.length" />
 			<div class="all-menu">
-				<div class="menu-item" @click="createPreviewsForAll">
-					<font-awesome-icon class="item-icon" icon="image" title="Preview asset" />
+				<div class="menu-item" @click="createPreviewsForAll" v-if="currentLocation === 'veeva'">
+					<font-awesome-icon class="item-icon" icon="image" />
 					<span>Create previews for each slide (full and thumb)</span>
 				</div>
 				<div class="menu-item" @click="automateScreenShotsForAll">
-					<font-awesome-icon class="item-icon" icon="camera" title="Preview asset" />
+					<font-awesome-icon class="item-icon" icon="camera" />
 					<span>Run automatic screenshots for all files</span>
 				</div>
-				<div class="menu-item" @click="previewAll">
-					<font-awesome-icon class="item-icon" icon="eye" title="Preview asset" />
+				<div class="menu-item" @click="previewAll" v-if="currentLocation === 'veeva'">
+					<font-awesome-icon class="item-icon" icon="eye" />
 					<span>Preview all screenshots</span>
 				</div>
 				<div class="menu-item" @click="saveAllToPdf">
-					<font-awesome-icon class="item-icon" icon="file-pdf" title="Preview asset" />
+					<font-awesome-icon class="item-icon" icon="file-pdf" />
 					<span>Save all previews to PDF</span>
+				</div>
+				<div class="menu-item" @click="saveLastToJpg" v-if="currentLocation === 'html5'">
+					<font-awesome-icon class="item-icon" icon="file-image" />
+					<span>Save last frames to JPG</span>
+				</div>
+				<div class="menu-item" @click="saveLastToPng" v-if="currentLocation === 'html5'">
+					<font-awesome-icon class="item-icon" :icon="['far', 'file-image']" />
+					<span>Save last frames to PNG</span>
+				</div>
+				<div class="menu-item" @click="createZip" v-if="currentLocation === 'html5'">
+					<font-awesome-icon class="item-icon" icon="file-archive" />
+					<span>Create zip packages and save in _SENT</span>
 				</div>
 			</div>
 		</div>
@@ -45,7 +57,7 @@ export default {
 		};
 	},
 	computed: {
-		...mapGetters(["tree", "veevaSlides", "allScreenShots"])
+		...mapGetters(["tree", "veevaSlides", "allScreenShots", "currentLocation"])
 	},
 	methods: {
 		goBack() {
@@ -66,7 +78,10 @@ export default {
 				this.isWorking = true;
 				this.$root.$emit("save-all-to-pdf");
 			}
-		}
+		},
+		saveLastToJpg() {},
+		saveLastToPng() {},
+		createZip() {}
 	},
 	mounted() {
 		this.$root.$on("pdf-saved", () => {

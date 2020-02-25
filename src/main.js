@@ -5,7 +5,8 @@ import App from "./App.vue";
 import VueSweetalert2 from "vue-sweetalert2";
 import PerfectScrollbar from "vue2-perfect-scrollbar";
 import {library} from "@fortawesome/fontawesome-svg-core";
-import {faCaretUp, faCaretDown, faInfoCircle, faEye, faRedo, faTimes, faArrowAltCircleLeft, faImage, faCamera, faBan, faCog, faSave, faFilePdf, faDownload} from "@fortawesome/free-solid-svg-icons";
+import {faCaretUp, faCaretDown, faInfoCircle, faEye, faRedo, faTimes, faArrowAltCircleLeft, faImage, faCamera, faBan, faCog, faSave, faFilePdf, faDownload, faFileImage, faFileArchive} from "@fortawesome/free-solid-svg-icons";
+import {faFileImage as farFileImage} from "@fortawesome/free-regular-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
 import "sweetalert2/dist/sweetalert2.min.css";
@@ -32,13 +33,13 @@ const options = {
 	cancelButtonColor: "#004D40"
 };
 
-library.add(faCaretUp, faCaretDown, faInfoCircle, faEye, faRedo, faTimes, faArrowAltCircleLeft, faImage, faCamera, faBan, faCog, faSave, faFilePdf, faDownload);
+library.add(faCaretUp, faCaretDown, faInfoCircle, faEye, faRedo, faTimes, faArrowAltCircleLeft, faImage, faCamera, faBan, faCog, faSave, faFilePdf, faDownload, faFileImage, farFileImage, faFileArchive);
 
 // Vue.use(VueRouter);
 Vue.use(VueSweetalert2, options);
 Vue.use(PerfectScrollbar);
 
-Vue.component('font-awesome-icon', FontAwesomeIcon)
+Vue.component("font-awesome-icon", FontAwesomeIcon);
 
 new Vue({
 	store,

@@ -1,5 +1,5 @@
 <template>
-	<header class="title" @click="onclick ? onclick : null">
+	<header class="title" @click="onclick ? onclick() : null">
 		<h3 class="title-header">{{ title }}</h3>
 		<div class="branch-settings" v-if="collapsable == 'true'">
 			<font-awesome-icon v-if="!collapsed" icon="caret-up" />

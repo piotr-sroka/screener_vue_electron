@@ -82,14 +82,8 @@ export default {
 			// 	this.$forceUpdate();
 			// }, 150);
 			// console.log(screenShot);
-		}
-	},
-	mounted() {
-		this.allScreenShots = [];
-		this.$on("change-position", this.onPositionChanged);
-		this.$root.$on("create-previews-for-all", this.createQueueToCreatePreviews);
-		this.$root.$on("run-automatic-screenshots-for-all", this.runQueueToAutomaticScreenshots);
-		this.$root.$on("autoscreen-end", () => {
+		},
+		endAutoScreen() {
 			if (this.isAutomateForAllRunning) {
 				this.currentIndexOfAutoScreen++;
 				if (this.currentIndexOfAutoScreen < this.veevaSlides.length) {
@@ -98,8 +92,22 @@ export default {
 					this.isAutomateForAllRunning = false;
 				}
 			}
-		});
+		}
+	},
+	mounted() {
+		this.allScreenShots = [];
+		this.$on("change-position", this.onPositionChanged);
+		this.$root.$on("create-previews-for-all", this.createQueueToCreatePreviews);
+		this.$root.$on("run-automatic-screenshots-for-all", this.runQueueToAutomaticScreenshots);
+		this.$root.$on("autoscreen-end", this.endAutoScreen);
 		this.$root.$on("preview-all", this.createPreviewAll);
+	},
+	beforeDestroy() {
+		this.$off("change-position", this.onPositionChanged);
+		this.$root.$off("create-previews-for-all", this.createQueueToCreatePreviews);
+		this.$root.$off("run-automatic-screenshots-for-all", this.runQueueToAutomaticScreenshots);
+		this.$root.$off("autoscreen-end", this.endAutoScreen);
+		this.$root.$off("preview-all", this.createPreviewAll);
 	}
 };
 </script>
