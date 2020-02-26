@@ -4,7 +4,7 @@
 		<div class="branch-content variant-content">
 			<Language class="variant-child" v-for="language in languages" :key="language.name" :language="language"></Language>
 			<Size class="variant-child" v-for="size in sizes" :key="size.name" :size="size"></Size>
-			<IndexFile class="variant-child" v-for="indexFile in indexFiles" :key="indexFile.name" :indexFile="indexFile"></IndexFile>
+			<IndexFile class="variant-child" v-for="indexFile in indexFiles" :key="indexFile.name" :indexFile="indexFile" type="html5"></IndexFile>
 		</div>
 	</div>
 </template>

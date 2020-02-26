@@ -5,7 +5,7 @@
 			<Variant class="campaign-child" v-for="variant in variants" :key="variant.name" :variant="variant"></Variant>
 			<Language class="campaign-child" v-for="language in languages" :key="language.name" :language="language"></Language>
 			<Size class="campaign-child" v-for="size in sizes" :key="size.name" :size="size"></Size>
-			<IndexFile class="campaign-child" v-for="indexFile in indexFiles" :key="indexFile.name" :indexFile="indexFile"></IndexFile>
+			<IndexFile class="campaign-child" v-for="indexFile in indexFiles" :key="indexFile.name" :indexFile="indexFile" type="html5"></IndexFile>
 		</div>
 	</div>
 </template>

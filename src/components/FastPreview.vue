@@ -6,7 +6,7 @@
 			</div>
 		</header>
 		<div class="preview-screenshot">
-			<img class="image" :src="currentPreviewedScreenShot" alt="" @click.stop />
+			<img class="image" :src="currentPreviewedScreenShot.data ? currentPreviewedScreenShot.data : currentPreviewedScreenShot" alt="" @click.stop />
 		</div>
 		<perfect-scrollbar>
 			<div class="screenshots-container" @click.stop>
@@ -22,6 +22,11 @@ import {mapGetters} from "vuex";
 export default {
 	components: {
 		ScreenShot
+	},
+	data() {
+		return {
+			scrollPosition: 0
+		};
 	},
 	props: ["screenShots", "previewIndex", "mode"],
 	computed: {
@@ -61,10 +66,12 @@ export default {
 		}
 	},
 	mounted() {
-		this.toggleBodyClass("addClass", "scrollable");
+		this.$root.$emit("preview-opened");
+		// this.toggleBodyClass("addClass", "scrollable");
 	},
 	destroyed() {
-		this.toggleBodyClass("removeClass", "scrollable");
+		this.$root.$emit("preview-closed");
+		// this.toggleBodyClass("removeClass", "scrollable");
 	}
 };
 </script>
@@ -75,9 +82,10 @@ export default {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgba(0, 0, 0, 0.8);
+	background-color: rgba(0, 0, 0, 0.95);
 	color: #eceff1;
 	z-index: 9;
+	overscroll-behavior: contain;
 }
 .preview-screenshot {
 	display: flex;

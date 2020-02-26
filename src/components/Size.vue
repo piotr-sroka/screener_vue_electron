@@ -10,7 +10,7 @@
 			collapsable="false"
 		/>
 		<div class="branch-content size-content">
-			<IndexFile class="size-child" v-for="indexFile in indexFiles" :key="indexFile.name" :indexFile="indexFile"></IndexFile>
+			<IndexFile class="size-child" v-for="indexFile in indexFiles" :key="indexFile.name" :indexFile="indexFile" type="html5"></IndexFile>
 		</div>
 	</div>
 </template>

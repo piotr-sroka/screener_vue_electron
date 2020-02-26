@@ -11,6 +11,9 @@
 		<div class="banner-container" ref="bannerContainer">
 			<BannerFrame ref="banner" :banner="simplePreviewBanner" :maxBannerWidth="maxPreviewBannerWidth" :maxBannerHeight="maxPreviewBannerHeight" :type="currentContentType" @click.stop />
 		</div>
+		<div class="screenshot-thumbs">
+			<img class="thumb" v-for="(screenshot, index) in screenshotThumbs" :key="index" :src="screenshot" alt="" />
+		</div>
 	</div>
 </template>
 <script>
@@ -28,7 +31,8 @@ export default {
 			maxPreviewBannerHeight: 0,
 			bannerContainer: null,
 			banner: null,
-			isGrabbingScreen: false
+			isGrabbingScreen: false,
+			screenshotThumbs: []
 		};
 	},
 	computed: {
@@ -61,10 +65,25 @@ export default {
 			}
 		},
 		onScreenGrabbed(e) {
-			this.$store.dispatch("screenGrabbed", {slide: this.simplePreviewBanner, shot: e.target.data, size: e.target.size});
+			if (this.currentContentType === "veeva") {
+				this.$store.dispatch("screenGrabbed", {slide: this.simplePreviewBanner, shot: e.target.data, size: e.target.size});
+			}
+			if (this.currentContentType === "html5") {
+				if (!this.simplePreviewBanner.screenShots.find(s => s.data === e.target.data)) {
+					this.screenshotThumbs.push(e.target.data);
+					setTimeout(this.removeFirstThumb, 2000);
+					this.simplePreviewBanner.screenShots.push(e.target);
+					this.$root.$emit("refresh");
+				}
+			}
 			setTimeout(() => {
 				this.isGrabbingScreen = false;
-			}, 500);
+			}, 100);
+		},
+		removeFirstThumb() {
+			if (this.screenshotThumbs.length) {
+				this.screenshotThumbs.splice(0, 1);
+			}
 		}
 	},
 	mounted() {
@@ -85,6 +104,7 @@ export default {
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.8);
 	color: #eceff1;
+	z-index: 9;
 }
 .preview-header {
 	display: flex;
@@ -120,7 +140,7 @@ export default {
 }
 .option.option-grab-screen {
 	margin-right: 48px;
-	transition: color 0.2s linear;
+	transition: color 0.1s linear;
 }
 .option-grab-screen.active {
 	color: #004d40;
@@ -130,5 +150,20 @@ export default {
 		width: Calc(100% - 20px);
 		height: Calc(100% - 20px);
 	}
+}
+.screenshot-thumbs {
+	position: fixed;
+	width: 100%;
+	height: 60px;
+	bottom: 0;
+	padding: 10px;
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+.thumb {
+	max-width: 60px;
+	max-height: 60px;
+	margin-right: 12px;
 }
 </style>

@@ -38,6 +38,11 @@ export default {
 		Updater,
 		Saver
 	},
+	data() {
+		return {
+			scrollDisabled: false
+		}
+	},
 	computed: {
 		...mapGetters(["tree", "simplePreviewBanner", "currentLocation"]),
 		headerImage() {
@@ -68,6 +73,7 @@ body,
 body.swal2-shown.swal2-height-auto {
 	background-color: #eceff1;
 	height: 100% !important;
+	overscroll-behavior: contain;
 }
 * {
 	box-sizing: border-box;
@@ -85,10 +91,11 @@ body.swal2-shown.swal2-height-auto {
 	height: 100%;
 	position: relative;
 	overflow: hidden;
+	overscroll-behavior: contain;
 }
-.scrollable #app {
+/* .scrollable #app {
 	overflow: hidden;
-}
+} */
 .ps {
 	height: Calc(100% - 126px);
 }
@@ -96,7 +103,7 @@ body.swal2-shown.swal2-height-auto {
 	height: Calc(100% - 40px);
 }
 .scrollable .ps {
-	height: unset;
+	/* height: unset; */
 }
 .preview-box .ps {
 	height: unset;
@@ -114,7 +121,9 @@ body.swal2-shown.swal2-height-auto {
 .footer {
 	height: 40px;
 }
-.swal2-header, .swal2-content, .swal2-actions {
+.swal2-header,
+.swal2-content,
+.swal2-actions {
 	font-family: "Avenir", Helvetica, Arial, sans-serif;
 }
 </style>

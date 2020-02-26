@@ -3,7 +3,7 @@
 		<BranchHeader :title="language.name" :onclick="toggleBranch" :collapsed="collapsed" collapsable="true" />
 		<div class="branch-content language-content">
 			<Size class="language-child" v-for="size in sizes" :key="size.name" :size="size"></Size>
-			<IndexFile class="language-child" v-for="indexFile in indexFiles" :key="indexFile.name" :indexFile="indexFile"></IndexFile>
+			<IndexFile class="language-child" v-for="indexFile in indexFiles" :key="indexFile.name" :indexFile="indexFile" type="html5"></IndexFile>
 		</div>
 	</div>
 </template>

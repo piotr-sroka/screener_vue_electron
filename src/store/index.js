@@ -14,7 +14,10 @@ export default new Vuex.Store({
 		currentContentType: null,
 		sLength: 0,
 		currentLocation: "home",
-		allScreenShots: []
+		allScreenShots: [],
+		defaultTimeout: 10,
+		defaultFrequency: 1,
+		allIndexFiles: []
 	},
 	getters: {
 		tree: state => {
@@ -37,6 +40,15 @@ export default new Vuex.Store({
 		},
 		allScreenShots: state => {
 			return state.allScreenShots;
+		},
+		defaultTimeout: state => {
+			return state.defaultTimeout;
+		},
+		defaultFrequency: state => {
+			return state.defaultFrequency;
+		},
+		allIndexFiles: state => {
+			return state.allIndexFiles;
 		}
 	},
 	mutations: {
@@ -94,6 +106,18 @@ export default new Vuex.Store({
 					});
 				}
 			});
+		},
+		setDefaultTimeout(state, t) {
+			state.defaultTimeout = t;
+		},
+		setDefaultFrequency(state, t) {
+			state.defaultFrequency = t;
+		},
+		addIndexFileToList(state, indexFile) {
+			state.allIndexFiles.push(indexFile);
+		},
+		clearIndexFileList(state) {
+			state.allIndexFiles = [];
 		}
 	},
 	actions: {
@@ -127,6 +151,18 @@ export default new Vuex.Store({
 		},
 		setAllScreenShots({commit}) {
 			commit("setAllScreenShots");
+		},
+		setDefaultTimeout({commit}, t) {
+			commit("setDefaultTimeout", t < 1 ? 1 : t);
+		},
+		setDefaultFrequency({commit}, t) {
+			commit("setDefaultFrequency", t < 0.1 ? 0.1 : t);
+		},
+		addIndexFileToList({commit}, indexFile) {
+			commit("addIndexFileToList", indexFile);
+		},
+		clearIndexFileList({commit}) {
+			commit("clearIndexFileList");
 		}
 	},
 	modules: {}

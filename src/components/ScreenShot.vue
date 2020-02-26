@@ -4,7 +4,7 @@
 			<font-awesome-icon class="option-icon" icon="eye" title="Preview frame" @click="onPreviewClick" v-if="type !== 'fast'" />
 			<font-awesome-icon class="option-icon" icon="times" title="Delete frame" @click="onRemoveClick" v-if="type !== 'fast'" />
 		</div>
-		<img class="screenshot-image" :src="screenShot" alt="" @click="onPreviewClick" />
+		<img class="screenshot-image" :src="screenShot.data ? screenShot.data : screenShot" alt="" @click="onPreviewClick" />
 	</div>
 </template>
 <script>
@@ -27,7 +27,7 @@ export default {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	padding: 12px;
+	padding: 24px;
 	position: relative;
 }
 .screenshot-image {
