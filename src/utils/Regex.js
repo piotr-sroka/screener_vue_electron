@@ -5,6 +5,7 @@ const Regex = {
     isSize: /\b^\d{2,4}x\d{2,4}\b/i,
     isFile: /\b.*\.html$\b/i,
     isOther: /\b^_.*\b$/,
-    isVeevaThumb: /\b.*-thumb\.(jpg|png)$\b/i
+    isVeevaThumb: /\b.*-thumb\.(jpg|png)$\b/i,
+    isProperFileForZip: /\b.*\.(js|png|jpg|pdf|html|gif|css|mp4)\b$/i
 }
 export default Regex;

@@ -114,9 +114,15 @@ export default {
 		saveEachToPdf(e) {
 			this.$root.$emit("save-each-to-pdf");
 		},
-		saveLastToJpg() {},
-		saveLastToPng() {},
-		createZip() {},
+		saveLastToJpg() {
+			this.$root.$emit("save-each-last-frame-to-jpg");
+		},
+		saveLastToPng() {
+			this.$root.$emit("save-each-last-frame-to-png");
+		},
+		createZip() {
+			this.$root.$emit("save-each-last-frame-to-zip");
+		},
 		setTimeout(e) {
 			this.$store.dispatch("setDefaultTimeout", e.target.value);
 		},

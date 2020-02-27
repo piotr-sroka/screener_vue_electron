@@ -94,12 +94,20 @@ export default {
 		},
 		forceUpdate() {
 			this.$forceUpdate();
+		},
+		onFileSaving(e) {
+			this.isWorking = true;
+		},
+		onFileSaved(e) {
+			this.isWorking = false;
 		}
 	},
 	mounted() {
 		this.$root.$on("run-automatic-screenshots-for-all", this.startAutomaticScreenshots);
 		this.$root.$on("screen-grabbed", this.onScreenGrabbed);
 		this.$root.$on("refresh", this.forceUpdate);
+		this.$root.$on("each-file-saving", this.onFileSaving);
+		this.$root.$on("each-file-saved", this.onFileSaved);
 		this.$on("screen-grabbed", this.onScreenGrabbed);
 		this.$on("start-autoscreen", this.startAutomaticScreenshots);
 		this.timeout = this.defaultTimeout;
@@ -110,6 +118,8 @@ export default {
 		this.$root.$off("run-automatic-screenshots-for-all", this.startAutomaticScreenshots);
 		this.$root.$off("screen-grabbed", this.onScreenGrabbed);
 		this.$root.$off("refresh", this.forceUpdate);
+		this.$root.$off("each-file-saving", this.onFileSaving);
+		this.$root.$off("each-file-saved", this.onFileSaved);
 		this.$off("screen-grabbed", this.onScreenGrabbed);
 		this.$off("start-autoscreen", this.startAutomaticScreenshots);
 		clearInterval(this.timeStampInterval);

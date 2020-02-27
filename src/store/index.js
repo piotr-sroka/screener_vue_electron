@@ -15,7 +15,7 @@ export default new Vuex.Store({
 		sLength: 0,
 		currentLocation: "home",
 		allScreenShots: [],
-		defaultTimeout: 10,
+		defaultTimeout: 5,
 		defaultFrequency: 1,
 		allIndexFiles: []
 	},
