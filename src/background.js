@@ -2,6 +2,8 @@
 
 import {app, protocol, BrowserWindow, Menu} from "electron";
 import {createProtocol, installVueDevtools} from "vue-cli-plugin-electron-builder/lib";
+import path from "path";
+import fs from "fs";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -23,7 +25,8 @@ function createWindow() {
 			webSecurity: false,
 			nodeIntegrationInWorker: true
 		},
-		devTools: false
+		devTools: false,
+		icon: path.join(__dirname, "bundled", "static", "images", "app_logo.png")
 	});
 
 	if (process.env.WEBPACK_DEV_SERVER_URL) {
