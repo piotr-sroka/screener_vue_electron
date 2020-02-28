@@ -148,12 +148,17 @@ export default {
 			const indexFilesToSave = mode === "all" ? this.allIndexFiles : this.allIndexFiles.filter(indexFile => indexFile.screenShots.length);
 			let savedFiles = 0;
 			const filesToSaveLength = indexFilesToSave.length;
+			const currentDate = this.generateDate();
 			indexFilesToSave.forEach(async indexFile => {
 				const zip = new JSZip();
 				const dir = path.dirname(indexFile.htmlPath);
 				const sentPath = path.join(indexFile.htmlPath.substring(0, indexFile.htmlPath.indexOf(indexFile.campaignName) + indexFile.campaignName.length), "HTML5", "_SENT");
 				if (!fs.existsSync(sentPath)) {
 					await fs.mkdirSync(sentPath);
+				}
+				const datePath = path.join(sentPath, currentDate);
+				if (!fs.existsSync(datePath)) {
+					await fs.mkdirSync(datePath);
 				}
 				this.getFiles(dir).then(files => {
 					files.forEach(file => {
@@ -165,7 +170,7 @@ export default {
 						platform: process.platform,
 						compression: "STORE"
 					}).then(content => {
-						const zipPath = `${path.join(dir, indexFile.nc_name)}.zip`;
+						const zipPath = `${path.join(datePath, indexFile.nc_name)}.zip`;
 						fs.writeFile(zipPath, content, () => {
 							savedFiles++;
 							if (savedFiles === filesToSaveLength) {
@@ -179,13 +184,6 @@ export default {
 					});
 				});
 			});
-			// this.$swal({
-			// 	title: "Success",
-			// 	text: `All packages have been saved.`,
-			// 	icon: "success"
-			// }).then(result => {
-			// 	console.log(result);
-			// });
 		},
 		async getFiles(dir) {
 			const dirents = await fs.promises.readdir(dir, {withFileTypes: true});
@@ -196,6 +194,15 @@ export default {
 				})
 			);
 			return files.flat().filter(file => file !== null);
+		},
+		generateDate() {
+			const date = new Date();
+			const year = date.getFullYear();
+			const month = date.getMonth() + 1 < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
+			const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+			const hour = date.getHours();
+			const minutes = date.getMinutes();
+			return `${year}.${month}.${day} ${hour}-${minutes}`;
 		}
 	},
 	mounted() {
