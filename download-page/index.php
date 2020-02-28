@@ -35,7 +35,7 @@
 	<body>
 		<?php
 			$actualVersionName = '';
-			if ($handle = opendir('../actual/')) {
+			if ($handle = opendir('./actual/')) {
 				while (false !== ($entry = readdir($handle))) {
 					if ($entry != "." && $entry != "..") {
 						$actualVersionName = $entry;
