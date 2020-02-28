@@ -1,7 +1,7 @@
 <template>
 	<div class="banner-options">
 		<Loader size="small" v-if="isWorking" />
-		<font-awesome-icon class="option" icon="info-circle" title="Show asset info" />
+		<!-- <font-awesome-icon class="option" icon="info-circle" title="Show asset info" /> -->
 		<font-awesome-icon class="option" icon="eye" title="Preview asset" @click="previewBanner" />
 		<font-awesome-icon class="option" icon="camera" title="Automatic screenshot making" @click="startAutoScreen" />
 	</div>

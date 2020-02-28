@@ -14,7 +14,10 @@ import Regex from "../utils/Regex";
 export default {
 	data() {
 		return {
-			previewURL: ""
+			previewURL: "",
+			previewTypesToSave: [],
+			savedPreviewTypes: [],
+			previewsToDelete: []
 		};
 	},
 	computed: {
@@ -44,10 +47,17 @@ export default {
 			});
 			createPdf.postMessage(doc);
 		},
-		saveEachToPdf() {
+		saveEachAllTo(type) {
 			let savedFiles = 0;
 			const allIndexFilesWithScreenshots = this.allIndexFiles.filter(indexFile => indexFile.screenShots.length);
 			const filesToSaveLength = allIndexFilesWithScreenshots.length;
+			if (!filesToSaveLength) {
+				return this.$swal({
+					title: "Ooops...",
+					text: "There is nothing to save. Create some screenshots first.",
+					icon: "warning"
+				});
+			}
 			allIndexFilesWithScreenshots.forEach(indexFile => {
 				const exportCanvas = document.createElement("CANVAS");
 				const exportCtx = exportCanvas.getContext("2d");
@@ -77,28 +87,43 @@ export default {
 						exportCtx.drawImage(img, (screenShot.size.width + 50) * index, 0, screenShot.size.width, screenShot.size.height);
 					}
 				});
-				const doc = {
-					pageSize: {
-						width: pageSize.width,
-						height: pageSize.height
-					},
-					content: [{image: exportCanvas.toDataURL("image/png")}]
-				};
-				const createPdf = new CreatePdfWorker();
-				createPdf.addEventListener("message", e => {
-					const pdfPath = path.join(path.dirname(indexFile.htmlPath), `${indexFile.size}_preview.pdf`);
-					fs.writeFile(pdfPath, e.data, () => {
-						this.$root.$emit("each-file-saved", indexFile);
-						savedFiles++;
-						if (savedFiles === filesToSaveLength)
-							return this.$swal({
-								title: "Success",
-								text: "All previews for each file have been saved to PDFs.",
-								icon: "success"
-							});
+				if (type === "pdf") {
+					const doc = {
+						pageSize: {
+							width: pageSize.width,
+							height: pageSize.height
+						},
+						content: [{image: exportCanvas.toDataURL("image/png")}]
+					};
+					const createPdf = new CreatePdfWorker();
+					createPdf.addEventListener("message", e => {
+						const pdfPath = path.join(path.dirname(indexFile.htmlPath), `${indexFile.size}_preview.pdf`);
+						fs.writeFile(pdfPath, e.data, () => {
+							this.$root.$emit("each-file-saved", indexFile);
+							savedFiles++;
+							if (savedFiles === filesToSaveLength) {
+								this.savedPreviewTypes.push("pdf");
+								this.checkAllTypesToSave();
+							}
+							// return this.$swal({
+							// 	title: "Success",
+							// 	text: "All previews for each file have been saved to PDFs.",
+							// 	icon: "success"
+							// });
+						});
 					});
-				});
-				createPdf.postMessage(doc);
+					createPdf.postMessage(doc);
+				} else if (type === "jpg" || type === "png") {
+					const buffer = new Buffer(exportCanvas.toDataURL(`image/${type}`).replace(/^data:image\/\w+;base64,/, ""), "base64");
+					const filePath = path.join(path.dirname(indexFile.htmlPath), `${indexFile.size}_preview.${type}`);
+					fs.writeFile(filePath, buffer, () => {
+						savedFiles++;
+						if (savedFiles === filesToSaveLength) {
+							this.savedPreviewTypes.push(type);
+							this.checkAllTypesToSave();
+						}
+					});
+				}
 				this.$root.$emit("each-file-saving", indexFile);
 			});
 		},
@@ -112,6 +137,13 @@ export default {
 			let savedFiles = 0;
 			const allIndexFilesWithScreenshots = this.allIndexFiles.filter(indexFile => indexFile.screenShots.length);
 			const filesToSaveLength = allIndexFilesWithScreenshots.length;
+			if (!filesToSaveLength) {
+				return this.$swal({
+					title: "Ooops...",
+					text: "There is nothing to save. Create some screenshots first.",
+					icon: "warning"
+				});
+			}
 			allIndexFilesWithScreenshots.forEach(indexFile => {
 				const buffer = new Buffer(indexFile.screenShots[indexFile.screenShots.length - 1].data.replace(/^data:image\/\w+;base64,/, ""), "base64");
 				const filePath = path.join(path.dirname(indexFile.htmlPath), `${indexFile.size}_preview_last_frame.${type}`);
@@ -120,14 +152,14 @@ export default {
 					if (savedFiles === filesToSaveLength) {
 						return this.$swal({
 							title: "Success",
-							text: `All previews for each file have been saved to ${type.toUpperCase()}s.`,
+							text: `All previews have been saved.`,
 							icon: "success"
 						});
 					}
 				});
 			});
 		},
-		async saveEachLastFrameToZip() {
+		async saveEachToZip() {
 			const indexFilesWithoutScreenshots = this.allIndexFiles.filter(indexFile => !indexFile.screenShots.length);
 			let mode = "all";
 			if (indexFilesWithoutScreenshots.length) {
@@ -135,6 +167,7 @@ export default {
 					title: "Info",
 					text: "Do you want to save files without any screenshot? If no, only files with screenshots will be saved.",
 					icon: "info",
+					showCloseButton: true,
 					showCancelButton: true,
 					confirmButtonText: "Yes",
 					cancelButtonColor: "#E64A19",
@@ -203,21 +236,114 @@ export default {
 			const hour = date.getHours() < 10 ? `0${date.getHours()}` : date.getHours();
 			const minutes = date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
 			return `${year}.${month}.${day} ${hour}-${minutes}`;
+		},
+		async saveEachAll() {
+			this.getPreviewTypesToSave("all");
+			let mode = "remove";
+			if (this.previewsToDelete.length) {
+				const result = await this.$swal({
+					title: "Confirm",
+					text: "Should all unselected preview types be removed?",
+					icon: "question",
+					showCloseButton: true,
+					showCancelButton: true,
+					confirmButtonText: "Yes",
+					cancelButtonColor: "#E64A19",
+					cancelButtonText: "No"
+				}).then(res => {
+					if (res.dismiss) {
+						mode = "leave";
+					}
+				});
+			}
+			if (mode === "remove") {
+				this.previewsToDelete.forEach(type => {
+					this.deleteEach("all", type);
+				});
+			}
+			this.previewTypesToSave.forEach(type => {
+				this.saveEachAllTo(type);
+			});
+		},
+		async saveEachLast() {
+			this.getPreviewTypesToSave("last");
+			let mode = "remove";
+			if (this.previewsToDelete.length) {
+				const result = await this.$swal({
+					title: "Confirm",
+					text: "Should all unselected preview types be removed?",
+					icon: "question",
+					showCloseButton: true,
+					showCancelButton: true,
+					confirmButtonText: "Yes",
+					cancelButtonColor: "#E64A19",
+					cancelButtonText: "No"
+				}).then(res => {
+					if (res.dismiss) {
+						mode = "leave";
+					}
+				});
+			}
+			if (mode === "remove") {
+				this.previewsToDelete.forEach(type => {
+					this.deleteEach("last", type);
+				});
+			}
+			this.previewTypesToSave.forEach(type => {
+				this.saveEachLastFrame(type);
+			});
+		},
+		getPreviewTypesToSave(type) {
+			const config = JSON.parse(localStorage.getItem("eachSaveOptions"))[type];
+			this.previewTypesToSave = [];
+			this.savedPreviewTypes = [];
+			this.previewsToDelete = [];
+			for (let option in config) {
+				if (config[option]) {
+					this.previewTypesToSave.push(option);
+				} else {
+					this.previewsToDelete.push(option);
+				}
+			}
+		},
+		checkAllTypesToSave() {
+			if (this.previewTypesToSave.sort().join("") === this.savedPreviewTypes.sort().join("")) {
+				return this.$swal({
+					title: "Success",
+					text: `All previews have been saved.`,
+					icon: "success"
+				});
+			}
+		},
+		deleteEach(type, ext) {
+			this.allIndexFiles.forEach(indexFile => {
+				const dir = path.dirname(indexFile.htmlPath);
+				const fileToRemove = `${indexFile.size}_preview${type === "last" ? "_last_frame" : ""}.${ext}`;
+				if (fs.existsSync(path.join(dir, fileToRemove))) {
+					fs.unlinkSync(path.join(dir, fileToRemove));
+				}
+			});
 		}
 	},
 	mounted() {
 		this.$root.$on("save-all-to-pdf", this.saveAllToPdf);
-		this.$root.$on("save-each-to-pdf", this.saveEachToPdf);
-		this.$root.$on("save-each-last-frame-to-jpg", this.saveEachLastFrameToJpg);
-		this.$root.$on("save-each-last-frame-to-png", this.saveEachLastFrameToPng);
-		this.$root.$on("save-each-last-frame-to-zip", this.saveEachLastFrameToZip);
+		// this.$root.$on("save-each-to-pdf", this.saveEachToPdf);
+		// this.$root.$on("save-each-last-frame-to-jpg", this.saveEachLastFrameToJpg);
+		// this.$root.$on("save-each-last-frame-to-png", this.saveEachLastFrameToPng);
+
+		this.$root.$on("save-each-all", this.saveEachAll);
+		this.$root.$on("save-each-last", this.saveEachLast);
+		this.$root.$on("save-each-to-zip", this.saveEachToZip);
 	},
 	beforeDestroy() {
 		this.$root.$off("save-all-to-pdf", this.saveAllToPdf);
-		this.$root.$off("save-each-to-pdf", this.saveEachToPdf);
-		this.$root.$off("save-each-last-frame-to-jpg", this.saveEachLastFrameToJpg);
-		this.$root.$off("save-each-last-frame-to-png", this.saveEachLastFrameToPng);
-		this.$root.$off("save-each-last-frame-to-zip", this.saveEachLastFrameToZip);
+		// this.$root.$off("save-each-to-pdf", this.saveEachToPdf);
+		// this.$root.$off("save-each-last-frame-to-jpg", this.saveEachLastFrameToJpg);
+		// this.$root.$off("save-each-last-frame-to-png", this.saveEachLastFrameToPng);
+
+		this.$root.$off("save-each-all", this.saveEachAll);
+		this.$root.$off("save-each-last", this.saveEachLast);
+		this.$root.$off("save-each-to-zip", this.saveEachToZip);
 	}
 };
 </script>

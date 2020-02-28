@@ -37,13 +37,62 @@
 						<span>Preview all screenshots</span>
 					</div>
 				</div>
-				<div class="menu-item" @click="currentLocation === 'veeva' ? saveAllToPdf($event) : saveEachToPdf($event)">
+				<div class="menu-item" @click="saveAllToPdf" v-if="currentLocation === 'veeva'">
 					<div>
 						<font-awesome-icon class="item-icon" icon="file-pdf" />
 						<span>Save all previews to PDF</span>
 					</div>
 				</div>
-				<div class="menu-item" @click="saveLastToJpg" v-if="currentLocation === 'html5'">
+				<div class="menu-item" v-if="currentLocation === 'html5'">
+					<div>
+						<font-awesome-icon class="item-icon" icon="copy" />
+						<span>Save all previews to:</span>
+					</div>
+					<div class="item-submenu">
+						<div class="submenu-item">
+							<p class="submenu-checkbox"><input type="checkbox" @change="saveEachOptions" v-model="eachSaveOptions.all.pdf" id="save-all-pdf-checkbox" /><label for="save-all-pdf-checkbox">PDF</label></p>
+						</div>
+						<div class="submenu-item">
+							<p class="submenu-checkbox"><input type="checkbox" @change="saveEachOptions" v-model="eachSaveOptions.all.jpg" id="save-all-jpg-checkbox" /><label for="save-all-jpg-checkbox">JPG</label></p>
+						</div>
+						<div class="submenu-item">
+							<p class="submenu-checkbox"><input type="checkbox" @change="saveEachOptions" v-model="eachSaveOptions.all.png" id="save-all-png-checkbox" /><label for="save-all-png-checkbox">PNG</label></p>
+						</div>
+						<div class="submenu-item">
+							<button class="submenu-button" @click="saveEachAllFiles">Save</button>
+						</div>
+					</div>
+				</div>
+				<!-- <div class="menu-item" @click="saveEachToJpg" v-if="currentLocation === 'html5'">
+					<div>
+						<font-awesome-icon class="item-icon" icon="file-image" />
+						<span>Save all previews to JPG</span>
+					</div>
+				</div>
+				<div class="menu-item" @click="saveEachToPng" v-if="currentLocation === 'html5'">
+					<div>
+						<font-awesome-icon class="item-icon" :icon="['far', 'file-image']" />
+						<span>Save all previews to PNG</span>
+					</div>
+				</div> -->
+				<div class="menu-item" v-if="currentLocation === 'html5'">
+					<div>
+						<font-awesome-icon class="item-icon" icon="copy" />
+						<span>Save last frames to:</span>
+					</div>
+					<div class="item-submenu">
+						<div class="submenu-item">
+							<p class="submenu-checkbox"><input type="checkbox" @change="saveEachOptions" v-model="eachSaveOptions.last.jpg" id="save-last-jpg-checkbox" /><label for="save-last-jpg-checkbox">JPG</label></p>
+						</div>
+						<div class="submenu-item">
+							<p class="submenu-checkbox"><input type="checkbox" @change="saveEachOptions" v-model="eachSaveOptions.last.png" id="save-last-png-checkbox" /><label for="save-last-png-checkbox">PNG</label></p>
+						</div>
+						<div class="submenu-item">
+							<button class="submenu-button" @click="saveEachLastFrames">Save</button>
+						</div>
+					</div>
+				</div>
+				<!-- <div class="menu-item" @click="saveLastToJpg" v-if="currentLocation === 'html5'">
 					<div>
 						<font-awesome-icon class="item-icon" icon="file-image" />
 						<span>Save last frames to JPG</span>
@@ -54,12 +103,15 @@
 						<font-awesome-icon class="item-icon" :icon="['far', 'file-image']" />
 						<span>Save last frames to PNG</span>
 					</div>
-				</div>
+				</div> -->
 				<div class="menu-item" @click="createZip" v-if="currentLocation === 'html5'">
 					<div>
 						<font-awesome-icon class="item-icon" icon="file-archive" />
 						<span>Create zip packages and save in _SENT</span>
 					</div>
+				</div>
+				<div class="menu-item menu-info">
+					<p>*Unselected previews types will be removed from folders.</p>
 				</div>
 			</div>
 		</div>
@@ -79,7 +131,18 @@ export default {
 		return {
 			allMenuOpened: false,
 			isWorking: false,
-			submenuShown: false
+			submenuShown: false,
+			eachSaveOptions: {
+				all: {
+					pdf: true,
+					jpg: true,
+					png: true
+				},
+				last: {
+					jpg: true,
+					png: true
+				}
+			}
 		};
 	},
 	computed: {
@@ -111,8 +174,23 @@ export default {
 				this.$root.$emit("save-all-to-pdf");
 			}
 		},
+		saveEachOptions() {
+			localStorage.setItem("eachSaveOptions", JSON.stringify(this.eachSaveOptions));
+		},
+		saveEachAllFiles(e) {
+			this.$root.$emit("save-each-all");
+		},
+		saveEachLastFrames(e) {
+			this.$root.$emit("save-each-last");
+		},
 		saveEachToPdf(e) {
 			this.$root.$emit("save-each-to-pdf");
+		},
+		saveEachToJpg(e) {
+			this.$root.$emit("save-each-to-jpg");
+		},
+		saveEachToPng(e) {
+			this.$root.$emit("save-each-to-png");
 		},
 		saveLastToJpg() {
 			this.$root.$emit("save-each-last-frame-to-jpg");
@@ -121,7 +199,7 @@ export default {
 			this.$root.$emit("save-each-last-frame-to-png");
 		},
 		createZip() {
-			this.$root.$emit("save-each-last-frame-to-zip");
+			this.$root.$emit("save-each-to-zip");
 		},
 		setTimeout(e) {
 			this.$store.dispatch("setDefaultTimeout", e.target.value);
@@ -134,6 +212,16 @@ export default {
 		this.$root.$on("pdf-saved", () => {
 			this.isWorking = false;
 		});
+		if (localStorage.getItem("eachSaveOptions")) {
+			const savedEachSaveOptions = JSON.parse(localStorage.getItem("eachSaveOptions"));
+			this.eachSaveOptions.all.pdf = savedEachSaveOptions.all.pdf;
+			this.eachSaveOptions.all.jpg = savedEachSaveOptions.all.jpg;
+			this.eachSaveOptions.all.png = savedEachSaveOptions.all.png;
+			this.eachSaveOptions.last.jpg = savedEachSaveOptions.last.jpg;
+			this.eachSaveOptions.last.png = savedEachSaveOptions.last.png;
+		} else {
+			localStorage.setItem("eachSaveOptions", JSON.stringify(this.eachSaveOptions));
+		}
 	}
 };
 </script>
@@ -215,6 +303,12 @@ export default {
 .menu-item:hover {
 	border-bottom: 1px solid #eceff1;
 }
+.menu-item.menu-info {
+	align-items: flex-end;
+	padding-top: 24px;
+	color: #e64a19;
+	border: none;
+}
 .menu-item .item-icon {
 	margin-right: 12px;
 	font-size: 1.4em;
@@ -232,17 +326,23 @@ export default {
 .item-submenu {
 	display: flex;
 	flex: 100%;
-	padding-top: 12px;
+	padding: 12px 24px 0 24px;
 	align-items: center;
+	justify-content: space-between;
+	width: 100%;
 }
 .submenu-item:not(:last-child) {
 	margin-right: 12px;
+}
+.submenu-item:last-child {
+	margin-left: 48px;
 }
 .submenu-item input {
 	width: 60px;
 	padding: 8px 12px;
 	text-align: center;
 	outline: none;
+	border-width: 1px;
 }
 .submenu-button {
 	border: 1px solid #eceff1;
@@ -252,9 +352,43 @@ export default {
 	cursor: pointer;
 	transition: all 0.2s linear;
 	outline: none;
+	min-width: 100px;
 }
 .submenu-button:hover {
 	background-color: #eceff1;
 	color: #577280;
+}
+.submenu-checkbox label {
+	cursor: pointer;
+	position: relative;
+	padding: 0;
+}
+.submenu-checkbox input {
+	opacity: 0;
+	position: absolute;
+}
+.submenu-checkbox label::before {
+	content: "";
+	margin-right: 10px;
+	display: inline-block;
+	vertical-align: middle;
+	width: 20px;
+	height: 20px;
+	background: #eceff1;
+}
+.submenu-checkbox:hover label::before,
+.submenu-checkbox input:checked + label::before {
+	background: #009688;
+}
+.submenu-checkbox input:checked + label::after {
+	content: "";
+	position: absolute;
+	left: 5px;
+	top: 7px;
+	background: #eceff1;
+	width: 2px;
+	height: 2px;
+	box-shadow: 2px 0 0 #eceff1, 4px 0 0 #eceff1, 4px -2px 0 #eceff1, 4px -4px 0 #eceff1, 4px -6px 0 #eceff1, 4px -8px 0 #eceff1;
+	transform: rotate(45deg);
 }
 </style>
