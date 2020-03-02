@@ -22,7 +22,7 @@ export default {
 			};
 		},
 		bannerPath() {
-			let bannerPath = banner.htmlPath || banner.indexFile;
+			let bannerPath = this.banner.htmlPath || this.banner.indexFile;
 			if (process.platform === "darwin") bannerPath = `file://${bannerPath}`;
 			return bannerPath;
 		}
