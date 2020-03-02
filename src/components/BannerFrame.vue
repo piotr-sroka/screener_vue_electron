@@ -1,6 +1,6 @@
 <template>
 	<div :style="cssVars">
-		<iframe ref="frame" class="banner-frame" scrolling="no" frameborder="0" :src="banner.htmlPath || banner.indexFile" @load="checkCanvas" :width="canvas ? canvas.width : 0" :height="canvas ? canvas.height : 0"></iframe>
+		<iframe ref="frame" class="banner-frame" scrolling="no" frameborder="0" :src="bannerPath" @load="checkCanvas" :width="canvas ? canvas.width : 0" :height="canvas ? canvas.height : 0"></iframe>
 	</div>
 </template>
 <script>
@@ -20,6 +20,11 @@ export default {
 			return {
 				"--p-events": this.type === "veeva" ? "all" : "none"
 			};
+		},
+		bannerPath() {
+			let bannerPath = banner.htmlPath || banner.indexFile;
+			if (process.platform === "darwin") bannerPath = `file://${bannerPath}`;
+			return bannerPath;
 		}
 	},
 	methods: {
