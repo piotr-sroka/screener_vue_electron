@@ -1,7 +1,7 @@
 <template>
 	<div class="banner-options">
 		<Loader size="small" v-if="isWorking" />
-		<font-awesome-icon class="option" icon="info-circle" title="AutoShot detected" v-if="hasAutoShotEnabled" />
+		<font-awesome-icon class="option" icon="info-circle" title="AutoShot detected" v-if="hasAutoShotEnabled" @click="autoShotInfo" />
 		<font-awesome-icon class="option" icon="eye" title="Preview asset" @click="previewBanner" />
 		<font-awesome-icon class="option" icon="camera" title="Automatic screenshot making" @click="startAutoScreen" />
 	</div>
@@ -25,10 +25,17 @@ export default {
 		},
 		startAutoScreen() {
 			this.$parent.$emit("start-autoscreen");
+		},
+		autoShotInfo() {
+			return this.$swal({
+				title: "Info",
+				text: "AutoShot functionality has been detected. It will be used for make screenshots.",
+				icon: "info"
+			});
 		}
 	},
 	mounted() {
-		console.log(this.hasAutoShotEnabled)
+		console.log(this.hasAutoShotEnabled);
 	}
 };
 </script>
