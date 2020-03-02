@@ -2,7 +2,7 @@
 	<div>
 		<div class="indexFile-box">
 			<BannerFrame ref="banner" :banner="indexFile" :maxBannerWidth="maxWidth" :maxBannerHeight="maxHeight" :type="type" @click.stop />
-			<BannerOptions :banner="indexFile" :type="type" :isWorking="isWorking" />
+			<BannerOptions :banner="indexFile" :type="type" :isWorking="isWorking" :hasAutoShotEnabled="hasAutoShotEnabled" />
 		</div>
 		<div v-if="indexFile.screenShots && indexFile.screenShots.length" class="screenshots-container">
 			<ScreenShot v-for="(screenShot, index) in indexFile.screenShots" :screenShot="screenShot.data" :key="index" v-on:screenshot-preview="previewScreenShot" v-on:screenshot-remove="removeScreenShot" />
@@ -41,7 +41,8 @@ export default {
 			isWorking: false,
 			timeStampInterval: null,
 			showFastPreview: false,
-			previewIndex: 0
+			previewIndex: 0,
+			hasAutoShotEnabled: false
 		};
 	},
 	computed: {
@@ -62,14 +63,25 @@ export default {
 			this.previewIndex = this.indexFile.screenShots.indexOf(this.indexFile.screenShots.find(s => (screenShot.data && s.data === screenShot.data) || (!screenShot.data && s.data === screenShot)));
 		},
 		startAutomaticScreenshots() {
-			this.currentTimeStamp = 0;
 			this.isWorking = true;
 			this.indexFile.screenShots = [];
 			this.$refs.banner.$emit("reload");
-			clearInterval(this.timeStampInterval);
-			setTimeout(() => {
-				this.timeStampInterval = setInterval(this.takeScreenShot, this.frequency * 1000);
-			}, 100);
+			if (this.$refs.banner.$refs.frame.contentWindow.takeAutoShot) {
+				window.addEventListener("message", this.takeAutoScreenShot);
+			} else {
+				this.currentTimeStamp = 0;
+				clearInterval(this.timeStampInterval);
+				setTimeout(() => {
+					this.timeStampInterval = setInterval(this.takeScreenShot, this.frequency * 1000);
+				}, 100);
+			}
+		},
+		takeAutoScreenShot(msg) {
+			const data = JSON.parse(msg.data);
+			this.$refs.banner.$emit("grab-screen");
+			if (data.last) {
+				this.isWorking = false;
+			}
 		},
 		takeScreenShot() {
 			const maxTimeStamp = Math.ceil(this.timeout / this.frequency);
@@ -100,6 +112,11 @@ export default {
 		},
 		onFileSaved(e) {
 			this.isWorking = false;
+		},
+		checkIfAutoShot() {
+			if (this.$refs.banner.$refs.frame.contentWindow.takeAutoShot) {
+				this.hasAutoShotEnabled = true;
+			}
 		}
 	},
 	mounted() {
@@ -113,6 +130,7 @@ export default {
 		this.timeout = this.defaultTimeout;
 		this.frequency = this.defaultFrequency;
 		this.$store.dispatch("addIndexFileToList", this.indexFile);
+		this.$on("frame-loaded", this.checkIfAutoShot);
 	},
 	beforeDestroy() {
 		this.$root.$off("run-automatic-screenshots-for-all", this.startAutomaticScreenshots);
@@ -124,6 +142,7 @@ export default {
 		this.$off("start-autoscreen", this.startAutomaticScreenshots);
 		clearInterval(this.timeStampInterval);
 		this.$store.dispatch("clearIndexFileList");
+		this.$off("frame-loaded", this.checkIfAutoShot);
 	},
 	watch: {
 		defaultTimeout: function(val) {

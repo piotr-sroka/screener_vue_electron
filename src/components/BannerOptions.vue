@@ -1,7 +1,7 @@
 <template>
 	<div class="banner-options">
 		<Loader size="small" v-if="isWorking" />
-		<!-- <font-awesome-icon class="option" icon="info-circle" title="Show asset info" /> -->
+		<font-awesome-icon class="option" icon="info-circle" title="AutoShot detected" v-if="hasAutoShotEnabled" />
 		<font-awesome-icon class="option" icon="eye" title="Preview asset" @click="previewBanner" />
 		<font-awesome-icon class="option" icon="camera" title="Automatic screenshot making" @click="startAutoScreen" />
 	</div>
@@ -14,7 +14,7 @@ export default {
 	components: {
 		Loader
 	},
-	props: ["banner", "type", "isWorking"],
+	props: ["banner", "type", "isWorking", "hasAutoShotEnabled"],
 	data() {
 		return {};
 	},
@@ -27,7 +27,9 @@ export default {
 			this.$parent.$emit("start-autoscreen");
 		}
 	},
-	mounted() {}
+	mounted() {
+		console.log(this.hasAutoShotEnabled)
+	}
 };
 </script>
 

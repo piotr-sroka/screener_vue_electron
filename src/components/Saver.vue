@@ -117,6 +117,7 @@ export default {
 					const buffer = new Buffer(exportCanvas.toDataURL(`image/${type}`).replace(/^data:image\/\w+;base64,/, ""), "base64");
 					const filePath = path.join(path.dirname(indexFile.htmlPath), `${indexFile.size}_preview.${type}`);
 					fs.writeFile(filePath, buffer, () => {
+						this.$root.$emit("each-file-saved", indexFile);
 						savedFiles++;
 						if (savedFiles === filesToSaveLength) {
 							this.savedPreviewTypes.push(type);

@@ -33,11 +33,7 @@ export default {
 			this.bannerBody = this.bannerDocument.body;
 			this.canvas = this.bannerDocument.querySelector("canvas");
 			if (this.canvas && this.bannerBody) this.resizeBannerFrame();
-			if (this.bannerWindow) {
-				this.bannerWindow.onerror = () => {
-					//handle error
-				};
-			}
+			this.$parent.$emit("frame-loaded");
 		},
 		resizeBannerFrame() {
 			this.bannerFrame.style.display = "block";
