@@ -1,6 +1,6 @@
 <template>
 	<div class="thumb-generator">
-		<iframe :src="slide.indexFile" frameborder="0" @load="onIframeLoad"></iframe>
+		<iframe :src="slidePath" frameborder="0" @load="onIframeLoad"></iframe>
 		<canvas ref="exportCanvas" />
 	</div>
 </template>
@@ -30,6 +30,13 @@ export default {
 			},
 			ctx: null
 		};
+	},
+	computed: {
+		slidePath() {
+			let slidePath = slide.indexFile;
+			if (process.platform === "darwin") slidePath = `file://${slidePath}`;
+			return slidePath;
+		}
 	},
 	methods: {
 		onIframeLoad(e) {

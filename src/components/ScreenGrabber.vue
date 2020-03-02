@@ -1,6 +1,6 @@
 <template>
 	<div class="grabber-frame">
-		<iframe :src="slide.htmlPath || slide.indexFile" frameborder="0" @load="onIframeLoad" width="200" height="150"></iframe>
+		<iframe :src="slidePath" frameborder="0" @load="onIframeLoad" width="200" height="150"></iframe>
 	</div>
 </template>
 <script>
@@ -15,6 +15,13 @@ export default {
 			pagesToGrab: [],
 			screenShots: []
 		};
+	},
+	computed: {
+		slidePath() {
+			let slidePath = this.slide.htmlPath || this.slide.indexFile;
+			if (process.platform === "darwin") slidePath = `file://${slidePath}`;
+			return slidePath;
+		}
 	},
 	methods: {
 		onIframeLoad(e) {

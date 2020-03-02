@@ -29,7 +29,7 @@ export default {
 	},
 	methods: {
 		reloadBanner() {
-			this.$refs.frame.src = this.banner.htmlPath || this.banner.indexFile;
+			this.$refs.frame.src = this.bannerPath;
 		},
 		checkCanvas(e) {
 			this.bannerFrame = e.target;
