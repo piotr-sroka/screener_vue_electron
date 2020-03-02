@@ -44,7 +44,7 @@
 				closedir($handle);
 			}
 		?>
-		<a href="https://view.egplusww.pl/ps2/Screener/actual/<?php echo($actualVersionName) ?>" target="_blank">
+		<a href="./actual/<?php echo($actualVersionName) ?>" target="_blank">
 			<img src="download-icon.svg" alt="" />
 		</a>
 	</body>
