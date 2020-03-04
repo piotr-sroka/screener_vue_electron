@@ -28,9 +28,7 @@ import Client from "ftp";
 import Loader from "./Loader";
 import fs from "fs";
 import rimraf from "rimraf";
-import http from "http";
 import child from "child_process";
-import {autoUpdater} from "electron-updater";
 
 export default {
 	components: {
@@ -66,6 +64,14 @@ export default {
 					setTimeout(() => {
 						this.checkIfNewVersion(list[0]);
 					}, 1500);
+				});
+			});
+			this.FTP.on("error", () => {
+				this.loggingIn = false;
+				return this.$swal({
+					title: "Ooops...",
+					text: "Unable to connect to update server. Please try again later.",
+					icon: "error"
 				});
 			});
 			this.FTP.connect({
