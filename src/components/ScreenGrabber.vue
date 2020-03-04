@@ -201,6 +201,6 @@ export default {
 </script>
 <style scoped>
 .grabber-frame {
-	/* display: none; */
+	display: none;
 }
 </style>
