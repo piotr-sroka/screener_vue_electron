@@ -33,7 +33,7 @@ export default {
 	},
 	computed: {
 		slidePath() {
-			let slidePath = slide.indexFile;
+			let slidePath = this.slide.indexFile;
 			if (process.platform === "darwin") slidePath = `file://${slidePath}`;
 			return slidePath;
 		}

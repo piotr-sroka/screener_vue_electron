@@ -24,7 +24,7 @@ export default new Vuex.Store({
 			return state.tree;
 		},
 		veevaSlides: state => {
-			return state.veevaSlides;
+			return state.veevaSlides.filter(s => s.indexFile !== undefined);
 		},
 		simplePreviewBanner: state => {
 			return state.simplePreviewBanner;
