@@ -37,7 +37,14 @@ export default {
 			this.bannerDocument = this.bannerFrame.contentDocument ? this.bannerFrame.contentDocument : this.bannerFrame.contentWindow.document;
 			this.bannerBody = this.bannerDocument.body;
 			this.canvas = this.bannerDocument.querySelector("canvas");
-			if (this.canvas && this.bannerBody) this.resizeBannerFrame();
+			if (this.canvas && this.bannerBody) {
+				this.resizeBannerFrame();
+				try {
+					this.bannerWindow.enablerInitHandler();
+				} catch (error) {
+					console.log(error);
+				}
+			}
 			this.$parent.$emit("frame-loaded");
 		},
 		resizeBannerFrame() {
