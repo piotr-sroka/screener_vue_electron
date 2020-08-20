@@ -78,9 +78,10 @@ export default {
 		},
 		takeAutoScreenShot(msg) {
 			const data = JSON.parse(msg.data);
-			this.$refs.banner.$emit("grab-screen");
+			if (!data.type) this.$refs.banner.$emit("grab-screen");
 			if (data.last) {
 				this.isWorking = false;
+				window.removeEventListener("message", this.takeAutoScreenShot);
 			}
 		},
 		takeScreenShot() {
